@@ -22,13 +22,6 @@ class SpringboardAdvocacyAPIClient
   private $api_key;
 
   /**
-   * The client id to which the API key is assigned.
-   *
-   * @var string
-   */
-  private $client_id;
-
-  /**
    * The service url the client will connect to.
    *
    * @var string
@@ -57,14 +50,10 @@ class SpringboardAdvocacyAPIClient
    *
    * @return SpringboardAdvocacyAPIClient An instance of the SpringboardAdvocacyAPIClient class.
    */
-  public function __construct($api_key, $client_id, $url) {
+  public function __construct($api_key, $url) {
 
     if (empty($api_key)) {
       throw new Exception('API key is required.');
-    }
-
-    if (empty($client_id)) {
-      throw new Exception('Client id is required.');
     }
 
     if (empty($url)) {
@@ -94,12 +83,13 @@ class SpringboardAdvocacyAPIClient
    * @return array An array of Legislators objects.
    */
   public function getLegislators($zip) {
-    $response = $this->doRequest('legislators', array('zip' => $zip), 'GET');
+    $response = $this->doRequest('targets/legislators', array('zip' => $zip), 'GET');
     return json_decode($response);
   }
 
   public function getDistricts($zip) {
-
+    $response = $this->doRequest('districts', array('zip' => $zip), 'GET');
+    return json_decode($response);
   }
 
   public function getCustomTargets() {
@@ -108,18 +98,19 @@ class SpringboardAdvocacyAPIClient
   }
 
   public function getCustomTarget($id) {
-
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'GET');
+    return json_decode($response);
   }
 
   public function createCustomTarget(array $target) {
     $this->postFields = $target;
-    $this->postFields['client_id'] = $this->client_id;
     $response = $this->doRequest('targets/custom', NULL, 'POST');
     return json_decode($response);
   }
 
   public function deleteCustomTarget($id) {
-
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'DELETE');
+    return json_decode($response);
   }
 
   /**
@@ -128,7 +119,7 @@ class SpringboardAdvocacyAPIClient
   public function getApiMethods() {
     static $http_methods = array(
       'GET' => array(
-        'legislators',
+        'targets/legislators',
         'districts',
         'targets',
         'targets/custom',
@@ -137,7 +128,7 @@ class SpringboardAdvocacyAPIClient
         'targets/custom',
       ),
       'PUT' => array(
-        'targtes/custom',
+        'targets/custom',
       ),
       'DELETE' => array(
         'targets/custom',
@@ -156,15 +147,15 @@ class SpringboardAdvocacyAPIClient
    *
    * @return string JSON reprentation of service call response.
    */
-  private function doRequest($method, $params, $http_method) {
+  private function doRequest($request_path, $params, $http_method) {
 
     // Validate the request to prevent calling bogus endpoints.
-    if (!$this->validRequest($method, $http_method)) {
+    if (!$this->validRequest($request_path, $http_method)) {
       throw new Exception('Method does not exist.');
     }
 
     // Build ot the url to the service endpoint.
-    $url = $this->buildRequestUrl($method, $params);
+    $url = $this->buildRequestUrl($request_path, $params);
 
     // Set curl options.
     $options = array(
@@ -175,15 +166,18 @@ class SpringboardAdvocacyAPIClient
       CURLOPT_TIMEOUT => 10,
     );
 
-    if (!is_null($this->postFields)) {
+    if (!empty($this->postFields)) {
       $options[CURLOPT_POSTFIELDS] = $this->postFields;
+    }
+
+    if ($http_method == "DELETE" || $http_method == "PUT") {
+      $options[CURLOPT_CUSTOMREQUEST] = $http_method;
     }
 
     $handle = curl_init();
     curl_setopt_array($handle, $options);
     $json = curl_exec($handle);
     curl_close($handle);
-
     return $json;
   }
 
@@ -191,12 +185,12 @@ class SpringboardAdvocacyAPIClient
    * Private function to validate that the service method being
    * called actually exists.
    *
-   * @param string $method The name of the service method to call.
+   * @param string $request_path The name of the service method to call.
    * @param string $http_method The HTTP verb to use for the call.
    *
    * @return boolean True if the method exists, false if not.
    */
-  private function validRequest($method, $http_method) {
+  private function validRequest($request_path, $http_method) {
     $valid_verbs = array('GET', 'POST', 'PUT', 'DELETE');
 
     if (!in_array($http_method, $valid_verbs)) {
@@ -204,7 +198,11 @@ class SpringboardAdvocacyAPIClient
     }
 
     $methods = $this->getApiMethods();
-    return in_array($method, $methods[$http_method]);
+    if (count($request_path = explode('/', $request_path)) == 3) {
+       unset($request_path[2]);
+       $request_path = implode('/', $request_path);
+    }
+      return in_array($request_path, $methods[$http_method]);
   }
 
   /**
@@ -221,7 +219,7 @@ class SpringboardAdvocacyAPIClient
     $url = sprintf('%s/%s/%s?apikey=%s',
       $this->url,
       $this->version_prefix,
-      rawurlencode($method),
+      $method,
       rawurlencode($this->api_key)
     );
 
