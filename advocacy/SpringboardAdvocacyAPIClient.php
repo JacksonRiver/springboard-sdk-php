@@ -198,9 +198,9 @@ class SpringboardAdvocacyAPIClient
     }
 
     $methods = $this->getApiMethods();
-    if (count($request_path = explode('/', $request_path)) == 3) {
-       unset($request_path[2]);
-       $request_path = implode('/', $request_path);
+    if (count($paths = explode('/', $request_path)) == 3) {
+       unset($paths[2]);
+       $request_path = implode('/', $paths);
     }
       return in_array($request_path, $methods[$http_method]);
   }
@@ -213,13 +213,13 @@ class SpringboardAdvocacyAPIClient
    *
    * @return string Path to service endpoint with api key and query string params.
    */
-  private function buildRequestUrl($method, $params) {
+  private function buildRequestUrl($request_path, $params) {
     // Start with the basic service endpoint in the format
-    // of url/version/method?apikey=.
+    // of url/version/request_path?apikey=.
     $url = sprintf('%s/%s/%s?apikey=%s',
       $this->url,
       $this->version_prefix,
-      $method,
+      $request_path,
       rawurlencode($this->api_key)
     );
 
