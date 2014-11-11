@@ -108,6 +108,12 @@ class SpringboardAdvocacyAPIClient
     return json_decode($response);
   }
 
+  public function updateCustomTarget(array $target, $id) {
+    $this->postFields = $target;
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'PUT');
+    return json_decode($response);
+  }
+
   public function deleteCustomTarget($id) {
     $response = $this->doRequest('targets/custom/' . $id, NULL, 'DELETE');
     return json_decode($response);
@@ -166,7 +172,11 @@ class SpringboardAdvocacyAPIClient
       CURLOPT_TIMEOUT => 10,
     );
 
-    if (!empty($this->postFields)) {
+    if (!empty($this->postFields) &&  $http_method == "PUT") {
+      //$options['CURLOPT_HTTPHEADER] = array('X-HTTP-Method-Override: PUT');
+      $options[CURLOPT_POSTFIELDS] = http_build_query($this->postFields);
+    }
+    elseif(!empty($this->postFields) &&  $http_method == "POST") {
       $options[CURLOPT_POSTFIELDS] = $this->postFields;
     }
 
@@ -202,7 +212,7 @@ class SpringboardAdvocacyAPIClient
        unset($paths[2]);
        $request_path = implode('/', $paths);
     }
-      return in_array($request_path, $methods[$http_method]);
+    return in_array($request_path, $methods[$http_method]);
   }
 
   /**
