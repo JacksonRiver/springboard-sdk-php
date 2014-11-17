@@ -53,7 +53,7 @@ class SpringboardAdvocacyAPIClient
   public function __construct($api_key, $url) {
 
     if (empty($api_key)) {
-      throw new Exception('API key is required.');
+      //throw new Exception('API key is required.');
     }
 
     if (empty($url)) {
@@ -82,42 +82,49 @@ class SpringboardAdvocacyAPIClient
    *
    * @return array An array of Legislators objects.
    */
-  public function getLegislators($zip) {
-    $response = $this->doRequest('targets/legislators', array('zip' => $zip), 'GET');
+  public function getLegislators($zip, $access_token) {
+    $response = $this->doRequest('targets/legislators', array('zip' => $zip), 'GET', $access_token);
     return json_decode($response);
   }
 
-  public function getDistricts($zip) {
-    $response = $this->doRequest('districts', array('zip' => $zip), 'GET');
+  public function getDistricts($zip, $access_token) {
+    $response = $this->doRequest('districts', array('zip' => $zip), 'GET', $access_token);
     return json_decode($response);
   }
 
-  public function getCustomTargets() {
-    $response = $this->doRequest('targets/custom', NULL, 'GET');
+  public function getCustomTargets($access_token) {
+    $response = $this->doRequest('targets/custom', NULL, 'GET', $access_token);
     return json_decode($response);
   }
 
-  public function getCustomTarget($id) {
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'GET');
+  public function getCustomTarget($id, $access_token) {
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'GET', $access_token);
     return json_decode($response);
   }
 
-  public function createCustomTarget(array $target) {
+  public function createCustomTarget(array $target, $access_token) {
     $this->postFields = $target;
-    $response = $this->doRequest('targets/custom', NULL, 'POST');
+    $response = $this->doRequest('targets/custom', NULL, 'POST', $access_token);
     return json_decode($response);
   }
 
-  public function updateCustomTarget(array $target, $id) {
+  public function updateCustomTarget(array $target, $id, $access_token) {
     $this->postFields = $target;
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'PUT');
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'PUT', $access_token);
     return json_decode($response);
   }
 
-  public function deleteCustomTarget($id) {
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'DELETE');
+  public function deleteCustomTarget($id, $access_token) {
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'DELETE', $access_token);
     return json_decode($response);
   }
+
+  public function getToken($client_id, $client_secret) {
+    $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
+    $response = $this->doRequest('oauth/access_token', NULL, 'POST', NULL);
+    return json_decode($response);
+  }
+
 
   /**
    * Method to describe the available service methods.
@@ -132,6 +139,7 @@ class SpringboardAdvocacyAPIClient
       ),
       'POST' => array(
         'targets/custom',
+        'oauth/access_token',
       ),
       'PUT' => array(
         'targets/custom',
@@ -153,7 +161,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @return string JSON reprentation of service call response.
    */
-  private function doRequest($request_path, $params, $http_method) {
+  private function doRequest($request_path, $params, $http_method, $access_token) {
 
     // Validate the request to prevent calling bogus endpoints.
     if (!$this->validRequest($request_path, $http_method)) {
@@ -163,8 +171,16 @@ class SpringboardAdvocacyAPIClient
     // Build ot the url to the service endpoint.
     $url = $this->buildRequestUrl($request_path, $params);
 
+    if (!empty($access_token)) {
+      $header = array('Authorization: Bearer ' . $access_token);
+    }
+    else {
+      $header = array();
+    }
+
     // Set curl options.
     $options = array(
+      CURLOPT_HTTPHEADER => $header,
       CURLOPT_USERAGENT => self::USER_AGENT,
       CURLOPT_HEADER => false,
       CURLOPT_URL => $url,
@@ -173,9 +189,9 @@ class SpringboardAdvocacyAPIClient
     );
 
     if (!empty($this->postFields) &&  $http_method == "PUT") {
-      //$options['CURLOPT_HTTPHEADER] = array('X-HTTP-Method-Override: PUT');
       $options[CURLOPT_POSTFIELDS] = http_build_query($this->postFields);
     }
+
     elseif(!empty($this->postFields) &&  $http_method == "POST") {
       $options[CURLOPT_POSTFIELDS] = $this->postFields;
     }
@@ -183,7 +199,6 @@ class SpringboardAdvocacyAPIClient
     if ($http_method == "DELETE" || $http_method == "PUT") {
       $options[CURLOPT_CUSTOMREQUEST] = $http_method;
     }
-
     $handle = curl_init();
     curl_setopt_array($handle, $options);
     $json = curl_exec($handle);
@@ -202,7 +217,6 @@ class SpringboardAdvocacyAPIClient
    */
   private function validRequest($request_path, $http_method) {
     $valid_verbs = array('GET', 'POST', 'PUT', 'DELETE');
-
     if (!in_array($http_method, $valid_verbs)) {
       return FALSE;
     }
@@ -212,6 +226,7 @@ class SpringboardAdvocacyAPIClient
        unset($paths[2]);
        $request_path = implode('/', $paths);
     }
+
     return in_array($request_path, $methods[$http_method]);
   }
 
