@@ -50,7 +50,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @return SpringboardAdvocacyAPIClient An instance of the SpringboardAdvocacyAPIClient class.
    */
-  public function __construct($api_key, $url) {
+  public function __construct($url, $access_token, $api_key) {
 
     if (empty($api_key)) {
       //throw new Exception('API key is required.');
@@ -62,6 +62,7 @@ class SpringboardAdvocacyAPIClient
 
     $this->api_key = $api_key;
     $this->url = $url;
+    $this->access_token = $access_token;
 
     return $this;
   }
@@ -82,40 +83,40 @@ class SpringboardAdvocacyAPIClient
    *
    * @return array An array of Legislators objects.
    */
-  public function getLegislators($zip, $access_token) {
-    $response = $this->doRequest('targets/legislators', array('zip' => $zip), 'GET', $access_token);
+  public function getLegislators($zip) {
+    $response = $this->doRequest('targets/legislators', array('zip' => $zip), 'GET');
     return json_decode($response);
   }
 
-  public function getDistricts($zip, $access_token) {
-    $response = $this->doRequest('districts', array('zip' => $zip), 'GET', $access_token);
+  public function getDistricts($zip) {
+    $response = $this->doRequest('districts', array('zip' => $zip), 'GET');
     return json_decode($response);
   }
 
   public function getCustomTargets($access_token) {
-    $response = $this->doRequest('targets/custom', NULL, 'GET', $access_token);
+    $response = $this->doRequest('targets/custom', NULL, 'GET');
     return json_decode($response);
   }
 
-  public function getCustomTarget($id, $access_token) {
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'GET', $access_token);
+  public function getCustomTarget($id) {
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'GET');
     return json_decode($response);
   }
 
-  public function createCustomTarget(array $target, $access_token) {
+  public function createCustomTarget(array $target) {
     $this->postFields = $target;
-    $response = $this->doRequest('targets/custom', NULL, 'POST', $access_token);
+    $response = $this->doRequest('targets/custom', NULL, 'POST');
     return json_decode($response);
   }
 
-  public function updateCustomTarget(array $target, $id, $access_token) {
+  public function updateCustomTarget(array $target, $id) {
     $this->postFields = $target;
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'PUT', $access_token);
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'PUT');
     return json_decode($response);
   }
 
-  public function deleteCustomTarget($id, $access_token) {
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'DELETE', $access_token);
+  public function deleteCustomTarget($id) {
+    $response = $this->doRequest('targets/custom/' . $id, NULL, 'DELETE');
     return json_decode($response);
   }
 
@@ -161,7 +162,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @return string JSON reprentation of service call response.
    */
-  private function doRequest($request_path, $params, $http_method, $access_token) {
+  private function doRequest($request_path, $params, $http_method) {
 
     // Validate the request to prevent calling bogus endpoints.
     if (!$this->validRequest($request_path, $http_method)) {
@@ -171,8 +172,8 @@ class SpringboardAdvocacyAPIClient
     // Build ot the url to the service endpoint.
     $url = $this->buildRequestUrl($request_path, $params);
 
-    if (!empty($access_token)) {
-      $header = array('Authorization: Bearer ' . $access_token);
+    if (!empty($this->access_token)) {
+      $header = array('Authorization: Bearer ' . $this->access_token);
     }
     else {
       $header = array();
