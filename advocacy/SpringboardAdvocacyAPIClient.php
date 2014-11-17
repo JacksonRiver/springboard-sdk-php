@@ -172,16 +172,8 @@ class SpringboardAdvocacyAPIClient
     // Build ot the url to the service endpoint.
     $url = $this->buildRequestUrl($request_path, $params);
 
-    if (!empty($this->access_token)) {
-      $header = array('Authorization: Bearer ' . $this->access_token);
-    }
-    else {
-      $header = array();
-    }
-
     // Set curl options.
     $options = array(
-      CURLOPT_HTTPHEADER => $header,
       CURLOPT_USERAGENT => self::USER_AGENT,
       CURLOPT_HEADER => false,
       CURLOPT_URL => $url,
@@ -192,7 +184,6 @@ class SpringboardAdvocacyAPIClient
     if (!empty($this->postFields) &&  $http_method == "PUT") {
       $options[CURLOPT_POSTFIELDS] = http_build_query($this->postFields);
     }
-
     elseif(!empty($this->postFields) &&  $http_method == "POST") {
       $options[CURLOPT_POSTFIELDS] = $this->postFields;
     }
@@ -200,10 +191,16 @@ class SpringboardAdvocacyAPIClient
     if ($http_method == "DELETE" || $http_method == "PUT") {
       $options[CURLOPT_CUSTOMREQUEST] = $http_method;
     }
+
+    if (!empty($this->access_token)) {
+      $options[CURLOPT_HTTPHEADER] = array('Authorization: Bearer ' . $this->access_token);
+    }
+
     $handle = curl_init();
     curl_setopt_array($handle, $options);
     $json = curl_exec($handle);
     curl_close($handle);
+
     return $json;
   }
 
