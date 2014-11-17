@@ -15,11 +15,20 @@ class SpringboardAdvocacyAPIClient
 
   /**
    * The api key granted to the client application. This key
-   * will be used in all service method calls.
+   * will be used in some service method calls.
    *
    * @var string
    */
   private $api_key;
+
+
+  /**
+   * The oauth access token granted to the client application. This key
+   * will be used in most service method calls.
+   *
+   * @var string
+   */
+  private $access_token;
 
   /**
    * The service url the client will connect to.
