@@ -21,7 +21,6 @@ class SpringboardAdvocacyAPIClient
    */
   private $api_key;
 
-
   /**
    * The oauth access token granted to the client application. This key
    * will be used in most service method calls.
@@ -51,6 +50,20 @@ class SpringboardAdvocacyAPIClient
    */
   private $version_prefix = 'api/v1';
 
+ /**
+   * The oauth client id
+   *
+   * @var string
+   */
+  private $client_id;
+
+ /**
+   * The oauth secret
+   *
+   * @var string
+   */
+  private $client_secret;
+
   /**
    * Constructor.
    *
@@ -59,8 +72,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @return SpringboardAdvocacyAPIClient An instance of the SpringboardAdvocacyAPIClient class.
    */
-  public function __construct($url, $access_token, $api_key) {
-
+  public function __construct($url, $api_key = NULL) {
     if (empty($api_key)) {
       //throw new Exception('API key is required.');
     }
@@ -71,7 +83,6 @@ class SpringboardAdvocacyAPIClient
 
     $this->api_key = $api_key;
     $this->url = $url;
-    $this->access_token = $access_token;
 
     return $this;
   }
@@ -102,7 +113,7 @@ class SpringboardAdvocacyAPIClient
     return json_decode($response);
   }
 
-  public function getCustomTargets($access_token) {
+  public function getCustomTargets() {
     $response = $this->doRequest('targets/custom', NULL, 'GET');
     return json_decode($response);
   }
@@ -132,11 +143,17 @@ class SpringboardAdvocacyAPIClient
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('oauth/access_token', NULL, 'POST', NULL);
+    if (!empty($response['access_token'])) {
+      $this->access_token = $response['access_token'];
+    }
+    else {
+      throw new Exception('Access token not retrieved');
+    }
+
     return json_decode($response);
   }
 
-
-  /**
+   /**
    * Method to describe the available service methods.
    */
   public function getApiMethods() {
