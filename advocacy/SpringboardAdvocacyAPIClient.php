@@ -83,6 +83,7 @@ class SpringboardAdvocacyAPIClient
 
     $this->api_key = $api_key;
     $this->url = $url;
+    $this->access_token = $access_token;
 
     return $this;
   }
@@ -143,15 +144,16 @@ class SpringboardAdvocacyAPIClient
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('oauth/access_token', NULL, 'POST', NULL);
-    if (!empty($response['access_token'])) {
-      $this->access_token = $response['access_token'];
-    }
-    else {
+    if (empty($response['access_token'])) {
       throw new Exception('Access token not retrieved');
     }
-
     return json_decode($response);
   }
+
+  public function setToken($token) {
+    $this->access_token = $token;
+  }
+ 
 
    /**
    * Method to describe the available service methods.
