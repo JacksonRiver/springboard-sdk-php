@@ -83,7 +83,6 @@ class SpringboardAdvocacyAPIClient
 
     $this->api_key = $api_key;
     $this->url = $url;
-    $this->access_token = $access_token;
 
     return $this;
   }
