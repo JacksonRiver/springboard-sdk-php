@@ -106,48 +106,45 @@ class SpringboardAdvocacyAPIClient
    */
   public function getLegislators($zip) {
     $response = $this->doRequest('targets/legislators', array('zip' => $zip), 'GET');
-    return json_decode($response);
+    return $response;
   }
 
   public function getDistricts($zip) {
     $response = $this->doRequest('districts', array('zip' => $zip), 'GET');
-    return json_decode($response);
+    return $response;
   }
 
   public function getCustomTargets() {
     $response = $this->doRequest('targets/custom', NULL, 'GET');
-    return json_decode($response);
+    return $response;
   }
 
   public function getCustomTarget($id) {
     $response = $this->doRequest('targets/custom/' . $id, NULL, 'GET');
-    return json_decode($response);
+    return $response;
   }
 
   public function createCustomTarget(array $target) {
     $this->postFields = $target;
     $response = $this->doRequest('targets/custom', NULL, 'POST');
-    return json_decode($response);
+    return $response;
   }
 
   public function updateCustomTarget(array $target, $id) {
     $this->postFields = $target;
     $response = $this->doRequest('targets/custom/' . $id, NULL, 'PUT');
-    return json_decode($response);
+    return $response;
   }
 
   public function deleteCustomTarget($id) {
     $response = $this->doRequest('targets/custom/' . $id, NULL, 'DELETE');
-    return json_decode($response);
+    return $response;
   }
 
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('oauth/access_token', NULL, 'POST', NULL);
-    if (empty($response['access_token'])) {
-      throw new Exception('Access token not retrieved');
-    }
-    return json_decode($response);
+    return $response;
   }
 
   public function setToken($token) {
@@ -229,7 +226,7 @@ class SpringboardAdvocacyAPIClient
     $json = curl_exec($handle);
     curl_close($handle);
 
-    return $json;
+    return json_decode($json);
   }
 
   /**
