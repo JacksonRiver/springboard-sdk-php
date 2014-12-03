@@ -113,8 +113,13 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
-  public function getCustomTargets() {
-    $response = $this->doRequest('targets/custom', NULL, 'GET');
+  public function searchTargets($params = NULL) {
+    $response = $this->doRequest('targets/search', $params, 'GET');
+    return $response;
+  }
+
+  public function getCustomTargets($params = NULL) {
+    $response = $this->doRequest('targets/custom', $params, 'GET');
     return $response;
   }
 
@@ -161,6 +166,7 @@ class SpringboardAdvocacyAPIClient
         'districts',
         'targets',
         'targets/custom',
+        'targets/search',
       ),
       'POST' => array(
         'targets/custom',
@@ -202,7 +208,7 @@ class SpringboardAdvocacyAPIClient
       CURLOPT_HEADER => false,
       CURLOPT_URL => $url,
       CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_TIMEOUT => 10,
+      CURLOPT_TIMEOUT => 30,
     );
 
     if (!empty($this->postFields) &&  $http_method == "PUT") {
@@ -269,7 +275,6 @@ class SpringboardAdvocacyAPIClient
       $request_path,
       rawurlencode($this->api_key)
     );
-
     // Add query params if available.
     if (!empty($params)) {
       foreach ($params as $key => $value) {
