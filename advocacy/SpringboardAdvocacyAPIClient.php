@@ -104,50 +104,50 @@ class SpringboardAdvocacyAPIClient
    * @return array An array of Legislators objects.
    */
   public function getLegislators($zip) {
-    $response = $this->doRequest('targets/legislators', array('zip' => $zip), 'GET');
+    $response = $this->doRequest( 'GET','targets/legislators', array('zip' => $zip));
     return $response;
   }
 
   public function getDistricts($zip) {
-    $response = $this->doRequest('districts', array('zip' => $zip), 'GET');
+    $response = $this->doRequest('GET', 'districts', array('zip' => $zip));
     return $response;
   }
 
   public function searchTargets($params = NULL) {
-    $response = $this->doRequest('targets/search', $params, 'GET');
+    $response = $this->doRequest('GET', 'targets/search', $params);
     return $response;
   }
 
   public function getCustomTargets($params = NULL) {
-    $response = $this->doRequest('targets/custom', $params, 'GET');
+    $response = $this->doRequest('GET', 'targets/custom', $params);
     return $response;
   }
 
   public function getCustomTarget($id) {
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'GET');
+    $response = $this->doRequest('GET', 'targets/custom/' . $id);
     return $response;
   }
 
   public function createCustomTarget(array $target) {
     $this->postFields = $target;
-    $response = $this->doRequest('targets/custom', NULL, 'POST');
+    $response = $this->doRequest('POST', 'targets/custom');
     return $response;
   }
 
   public function updateCustomTarget(array $target, $id) {
     $this->postFields = $target;
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'PUT');
+    $response = $this->doRequest('PUT', 'targets/custom/' . $id);
     return $response;
   }
 
   public function deleteCustomTarget($id) {
-    $response = $this->doRequest('targets/custom/' . $id, NULL, 'DELETE');
+    $response = $this->doRequest('DELETE', 'targets/custom/' . $id);
     return $response;
   }
 
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
-    $response = $this->doRequest('oauth/access_token', NULL, 'POST', NULL);
+    $response = $this->doRequest('POST', 'oauth/access_token');
     return $response;
   }
 
@@ -192,7 +192,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @return string JSON reprentation of service call response.
    */
-  private function doRequest($request_path, $params, $http_method) {
+  private function doRequest($http_method, $request_path, $params = NULL) {
 
     // Validate the request to prevent calling bogus endpoints.
     if (!$this->validRequest($request_path, $http_method)) {
