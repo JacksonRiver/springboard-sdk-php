@@ -101,44 +101,114 @@ class SpringboardAdvocacyAPIClient
    *
    * @param string $zip A full 9-digit US zip code in the format 99999-9999.
    *
-   * @return array An array of Legislators objects.
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array of Legislators objects.
    */
   public function getLegislators($zip) {
     $response = $this->doRequest( 'GET','targets/legislators', array('zip' => $zip));
     return $response;
   }
 
+  /**
+   * Public method to return all districts associated with a given zip code.
+   *
+   * @param string $zip A full 9-digit US zip code in the format 99999-9999.
+   *
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array of districts keyed by legislative chamber.
+   */
   public function getDistricts($zip) {
     $response = $this->doRequest('GET', 'districts', array('zip' => $zip));
     return $response;
   }
 
+  /**
+   * Public method to return all Targets associated with a given search query.
+   *
+   * @param string $params A query string containing search fields and terms.
+   * Possible fields include: role state gender party first_name last_name email
+   * format: field=[comma separated field names]&values=[search string]&type="[custom or legislator]"
+   *
+   * @return obj A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array of Target objects.
+   */
   public function searchTargets($params = NULL) {
     $response = $this->doRequest('GET', 'targets/search', $params);
     return $response;
   }
 
+  /**
+   * Public method to return all Targets with optional parameter filter.
+   *
+   * @param string $params A query string in the format field_name=value
+   * Possible fields include: role state gender party first_name last_name email
+   *
+   * @return obj A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array of Target objects filtered by account and optional params
+   */
   public function getCustomTargets($params = NULL) {
     $response = $this->doRequest('GET', 'targets/custom', $params);
     return $response;
   }
 
+  /**
+   * Public method to return a custom target.
+   *
+   * @param string $id The Target ID.
+   *
+   * @return obj A response object with an 'error' property containing a message 
+   * or a 'data' property containing a Target object
+   */
   public function getCustomTarget($id) {
     $response = $this->doRequest('GET', 'targets/custom/' . $id);
     return $response;
   }
 
+  /**
+   * Public method to create a custom target.
+   *
+   * @param array $target An array of required target field values.
+   *
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array with keys/values: 
+   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]), 
+   * 'id' => [target id];
+   */
   public function createCustomTarget(array $target) {
     $this->postFields = $target;
     $response = $this->doRequest('POST', 'targets/custom');
     return $response;
   }
 
+  /**
+   * Public method to update a custom target.
+   *
+   * @param array $target An array of required target field values.
+   * @param string $target A target ID.
+   *
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array with keys/values: 
+   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]), 
+   * 'id' => [target id];
+   */
+
   public function updateCustomTarget(array $target, $id) {
     $this->postFields = $target;
     $response = $this->doRequest('PUT', 'targets/custom/' . $id);
     return $response;
   }
+  
+  /**
+   * Public method to delete a custom target.
+   *
+   * @param array $target An array of required target field values.
+   * @param string $target A target ID.
+   *
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array with keys/values: 
+   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]), 
+   * 'id' => [target id];
+   */
 
   public function deleteCustomTarget($id) {
     $response = $this->doRequest('DELETE', 'targets/custom/' . $id);
@@ -239,7 +309,7 @@ class SpringboardAdvocacyAPIClient
 
       return $options;
   }
-  
+
   /**
    * Private method for sending the Curl request.
    *
