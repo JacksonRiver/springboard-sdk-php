@@ -197,35 +197,60 @@ class SpringboardAdvocacyAPIClient
     $this->validHttpVerb($http_method);
     $this->validApiMethod($request_path, $http_method);
 
-    // Build ot the url to the service endpoint.
     $url = $this->buildRequestUrl($request_path, $params);
+    $curl = $this->prepareCurl($url, $http_method);
 
-    // Set curl options.
-    $options = array(
-      CURLOPT_USERAGENT => self::USER_AGENT,
-      CURLOPT_HEADER => false,
-      CURLOPT_URL => $url,
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_TIMEOUT => 30,
-    );
+    return $this->sendCurlRequest($curl);    // // Set curl options.
+  }
 
-    if (!empty($this->postFields) &&  $http_method == "PUT") {
-      $options[CURLOPT_POSTFIELDS] = http_build_query($this->postFields);
-    }
-    elseif(!empty($this->postFields) &&  $http_method == "POST") {
-      $options[CURLOPT_POSTFIELDS] = $this->postFields;
-    }
+  /**
+   * Private method for setting CURL options.
+   *
+   * @param string $url The request url.
+   * @param string $http_method The HTTP verb to use for the call.
+   *
+   * @return array Curl options.
+   */
+  private function prepareCurl($url, $http_method) {
 
-    if ($http_method == "DELETE" || $http_method == "PUT") {
-      $options[CURLOPT_CUSTOMREQUEST] = $http_method;
-    }
+      // Set curl options.
+      $options = array(
+        CURLOPT_USERAGENT => self::USER_AGENT,
+        CURLOPT_HEADER => false,
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 10,
+      );
 
-    if (!empty($this->access_token)) {
-      $options[CURLOPT_HTTPHEADER] = array('Authorization: Bearer ' . $this->access_token);
-    }
+      if (!empty($this->postFields) &&  $http_method == "PUT") {
+        $options[CURLOPT_POSTFIELDS] = http_build_query($this->postFields);
+      }
+      elseif(!empty($this->postFields) &&  $http_method == "POST") {
+        $options[CURLOPT_POSTFIELDS] = $this->postFields;
+      }
 
+      if ($http_method == "DELETE" || $http_method == "PUT") {
+        $options[CURLOPT_CUSTOMREQUEST] = $http_method;
+      }
+
+      if (!empty($this->access_token)) {
+        $options[CURLOPT_HTTPHEADER] = array('Authorization: Bearer ' . $this->access_token);
+      }
+
+      return $options;
+  }
+  
+  /**
+   * Private method for sending the Curl request.
+   *
+   * @param string $url The request url.
+   * @param string $http_method The HTTP verb to use for the call.
+   *
+   * @return string JSON reprentation of service call response.
+   */
+  private function sendCurlRequest($curlOptions) {
     $handle = curl_init();
-    curl_setopt_array($handle, $options);
+    curl_setopt_array($handle, $curlOptions);
     $json = curl_exec($handle);
     curl_close($handle);
 
@@ -250,7 +275,7 @@ class SpringboardAdvocacyAPIClient
     return true;
   }
 
-    /**
+  /**
    * Private function to validate that the request path being
    * called actually exists.
    *
