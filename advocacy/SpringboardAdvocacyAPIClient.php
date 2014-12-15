@@ -194,10 +194,8 @@ class SpringboardAdvocacyAPIClient
    */
   private function doRequest($http_method, $request_path, $params = NULL) {
 
-    // Validate the request to prevent calling bogus endpoints.
-    if (!$this->validRequest($request_path, $http_method)) {
-      throw new Exception('Method does not exist.');
-    }
+    $this->validHttpVerb($http_method);
+    $this->validApiMethod($request_path, $http_method);
 
     // Build ot the url to the service endpoint.
     $url = $this->buildRequestUrl($request_path, $params);
@@ -238,25 +236,39 @@ class SpringboardAdvocacyAPIClient
    * Private function to validate that the service method being
    * called actually exists.
    *
+   * @param string $http_method The HTTP verb to use for the call.
+   *
+   * @return boolean True if the method exists.
+   */
+ 
+  private function validHttpVerb($http_method)
+  {
+    $valid_verbs = array('GET', 'POST', 'PUT', 'DELETE');
+    if (!in_array($http_method, $valid_verbs)) {
+        throw new Exception('Method does not exist.');
+    }
+    return true;
+  }
+
+    /**
+   * Private function to validate that the request path being
+   * called actually exists.
+   *
    * @param string $request_path The name of the service method to call.
    * @param string $http_method The HTTP verb to use for the call.
    *
-   * @return boolean True if the method exists, false if not.
+   * @return boolean True if the method exists.
    */
-  private function validRequest($request_path, $http_method) {
-    $valid_verbs = array('GET', 'POST', 'PUT', 'DELETE');
-    if (!in_array($http_method, $valid_verbs)) {
-      return FALSE;
-    }
-
+ 
+  private function validApiMethod($request_path, $http_method)
+  {
     $methods = $this->getApiMethods();
-    if (count($paths = explode('/', $request_path)) == 3) {
-       unset($paths[2]);
-       $request_path = implode('/', $paths);
+    if(!in_array($request_path, $methods[$http_method])) {
+        throw new Exception('That api endpoint does not exist.');
     }
-
-    return in_array($request_path, $methods[$http_method]);
+    return true;
   }
+
 
   /**
    * Private method to generate the path to a service method endpoint.
