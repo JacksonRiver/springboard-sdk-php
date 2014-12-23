@@ -125,12 +125,28 @@ class SpringboardAdvocacyAPIClient
   /**
    * Public method to return all Targets associated with a given search query.
    *
-   * @param string $params A query string containing search fields and terms.
-   * Possible fields include: role state gender party first_name last_name email
-   * format: field=[comma separated field names]&values=[search string]&type="[custom or legislator]"
+   *
+   * @param  array  $params 
+   * An array containing search parameters, which may include:
+   *
+   * class_name
+   * last_name
+   * gender
+   * party
+   * state
+   * role (legislative chamber)
+   * offset
+   * limit
+   *
+   * Multiple values for a single field should be sepatated by a pipe "|"
+   *
+   * Or an set of fields which can combine the above:
+   * fields (whose value is comma-spearated field names of any of the above. May not implement this.)
+   * values (who value is the comma-separated combined values of the combination field)
    *
    * @return obj A response object with an 'error' property containing a message 
-   * or a 'data' property containing an array of Target objects.
+   * or a 'data' property containing an array containing an array of Target objects keyed by 'targets'
+   * and a result count keyed by 'count'.
    */
   public function searchTargets($params = NULL) {
     $response = $this->doRequest('GET', 'targets/search', $params);
@@ -197,11 +213,10 @@ class SpringboardAdvocacyAPIClient
     $response = $this->doRequest('PUT', 'targets/custom/' . $id);
     return $response;
   }
-  
+
   /**
    * Public method to delete a custom target.
    *
-   * @param array $target An array of required target field values.
    * @param string $target A target ID.
    *
    * @return object A response object with an 'error' property containing a message 
@@ -224,7 +239,6 @@ class SpringboardAdvocacyAPIClient
   public function setToken($token) {
     $this->access_token = $token;
   }
- 
 
    /**
    * Method to describe the available service methods.
