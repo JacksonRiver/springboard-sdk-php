@@ -232,7 +232,7 @@ class SpringboardAdvocacyAPIClient
 
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
-    $response = $this->doRequest('POST', 'oauth/access_token');
+    $response = $this->doRequest('POST', 'oauth/access-token');
     return $response;
   }
 
