@@ -233,6 +233,7 @@ class SpringboardAdvocacyAPIClient
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('POST', 'oauth/access-token');
+
     return $response;
   }
 
@@ -337,8 +338,13 @@ class SpringboardAdvocacyAPIClient
     curl_setopt_array($handle, $curlOptions);
     $json = curl_exec($handle);
     curl_close($handle);
-
-    return json_decode($json);
+    $response = json_decode($json);
+    if (!empty($response)) {
+      return $response;
+    }
+    else {
+      throw new Exception('Did not receive a JSON response');
+    }
   }
 
   /**
@@ -372,8 +378,15 @@ class SpringboardAdvocacyAPIClient
   private function validApiMethod($request_path, $http_method)
   {
     $methods = $this->getApiMethods();
+
+    // remove target ids from request path for validation.
+    if (count($paths = explode('/', $request_path)) == 3) {
+      unset($paths[2]);
+      $request_path = implode('/', $paths);
+    }
+
     if(!in_array($request_path, $methods[$http_method])) {
-        throw new Exception('That api endpoint does not exist.');
+        throw new Exception(t('@path api endpoint does not exist.', array('@path' => $request_path)));
     }
     return true;
   }
