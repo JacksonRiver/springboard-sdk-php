@@ -254,7 +254,7 @@ class SpringboardAdvocacyAPIClient
       ),
       'POST' => array(
         'targets/custom',
-        'oauth/access_token',
+        'oauth/access-token',
       ),
       'PUT' => array(
         'targets/custom',
