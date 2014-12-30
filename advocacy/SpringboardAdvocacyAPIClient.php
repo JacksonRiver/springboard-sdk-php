@@ -230,6 +230,83 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
+
+  /**
+   * Public method to return all Target Groups.
+   *
+   * @return obj A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array of Target Group objects filtered by account and optional params
+   */
+  public function getTargetGroups() {
+    $response = $this->doRequest('GET', 'target-groups');
+    return $response;
+  }
+
+  /**
+   * Public method to return a target group.
+   *
+   * @param string $id The Target ID.
+   *
+   * @return obj A response object with an 'error' property containing a message 
+   * or a 'data' property containing a Target Group object
+   */
+  public function getTargetGroup($id) {
+    $response = $this->doRequest('GET', 'target-groups/group/' . $id);
+    return $response;
+  }
+
+  /**
+   * Public method to create a target group.
+   *
+   * @param array $targetGroup An array of required target group field values.
+   *
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array with keys/values: 
+   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]), 
+   * 'id' => [target group id];
+   */
+  public function createTargetGroup(array $targetGroup) {
+    $this->postFields = $targetGroup;
+    $response = $this->doRequest('POST', 'target-groups');
+    return $response;
+  }
+
+  /**
+   * Public method to update a target group.
+   *
+   * @param array $targetGroup An array of required target group field values.
+   * @param string $targetGroup A target ID.
+   *
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array with keys/values: 
+   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]), 
+   * 'id' => [target id];
+   */
+
+  public function updateTargetGroup(array $targetGroup, $id) {
+    $this->postFields = $targetGroup;
+    $response = $this->doRequest('PUT', 'target-groups/group/' . $id);
+    return $response;
+  }
+
+  /**
+   * Public method to delete a target group.
+   *
+   * @param string $targetGroup A target ID.
+   *
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array with keys/values: 
+   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]), 
+   * 'id' => [target id];
+   */
+
+  public function deleteTargetGroup($id) {
+    $response = $this->doRequest('DELETE', 'target-groups/group/' . $id);
+    return $response;
+  }
+
+
+
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('POST', 'oauth/access-token');
@@ -252,16 +329,22 @@ class SpringboardAdvocacyAPIClient
         'targets',
         'targets/custom',
         'targets/search',
+        'target-groups',
+        'target-groups/group',
       ),
       'POST' => array(
         'targets/custom',
         'oauth/access-token',
+        'target-groups',
+
       ),
       'PUT' => array(
         'targets/custom',
+        'target-groups/group',
       ),
       'DELETE' => array(
         'targets/custom',
+        'target-groups/group',
       ),
     );
 
