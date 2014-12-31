@@ -390,11 +390,8 @@ class SpringboardAdvocacyAPIClient
         CURLOPT_TIMEOUT => 10,
       );
 
-      if (!empty($this->postFields) &&  $http_method == "PUT") {
+      if (!empty($this->postFields) &&  ($http_method == "PUT" || $http_method == "POST")) {
         $options[CURLOPT_POSTFIELDS] = http_build_query($this->postFields);
-      }
-      elseif(!empty($this->postFields) &&  $http_method == "POST") {
-        $options[CURLOPT_POSTFIELDS] = $this->postFields;
       }
 
       if ($http_method == "DELETE" || $http_method == "PUT") {
