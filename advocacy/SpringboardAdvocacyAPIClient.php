@@ -154,6 +154,29 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return all Target Groups associated with a given search query.
+   *
+   *
+   * @param  array  $params 
+   * An array containing a search parameters, which must include:
+   *
+   * group-name
+   *
+   * and may include:
+   * 
+   * limit
+   * offset
+   *
+   * @return obj A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array containing an array of Target objects keyed by 'targets'
+   * and a result count keyed by 'count'.
+   */
+  public function searchTargetGroups($params = NULL) {
+    $response = $this->doRequest('GET', 'target-groups/search', $params);
+    return $response;
+  }
+
+  /**
    * Public method to return all Targets with optional parameter filter.
    *
    * @param string $params A query string in the format field_name=value
@@ -331,6 +354,7 @@ class SpringboardAdvocacyAPIClient
         'targets/search',
         'target-groups',
         'target-groups/group',
+        'target-groups/search',
       ),
       'POST' => array(
         'targets/custom',
