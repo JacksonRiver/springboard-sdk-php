@@ -281,7 +281,24 @@ class SpringboardAdvocacyAPIClient
   /**
    * Public method to create a target group.
    *
-   * @param array $targetGroup An array of required target group field values.
+   * @param array $targetGroup An multidimensional array of required
+   * and optional target group field values.
+   *
+   * Structured similarly to:
+   *
+   *  array(
+   *    'name' => 'group name', //required
+   *    'chambers' => array(
+   *         0 => array('chamber' => 'fs', 'party =>'r', state => 'MA'),
+   *         1 => array('chamber' => 'fs', 'party =>'d', state => 'MA')
+   *       )
+   *    'executives' => array(
+   *         0 => array('role' => 'PRES01', 'party =>'r'),
+   *         1 => array('role' => 'PRES03', 'party =>'d')
+   *       )
+   *     )
+   *     'target_ids' => array('1', '2', '3', '4', '5', '6', '7'),
+   *   )
    *
    * @return object A response object with an 'error' property containing a message 
    * or a 'data' property containing an array with keys/values: 
@@ -297,8 +314,26 @@ class SpringboardAdvocacyAPIClient
   /**
    * Public method to update a target group.
    *
-   * @param array $targetGroup An array of required target group field values.
-   * @param string $targetGroup A target ID.
+   * @param array $targetGroup An multidimensional array of required
+   * and optional target group field values.
+   *
+   * Structured similarly to:
+   *
+   *  array(
+   *    'name' => 'group name', //required
+   *    'chambers' => array(
+   *         0 => array('chamber' => 'fs', 'party =>'r', state => 'MA'),
+   *         1 => array('chamber' => 'fs', 'party =>'d', state => 'MA')
+   *       )
+   *    'executives' => array(
+   *         0 => array('role' => 'PRES01', 'party =>'r'),
+   *         1 => array('role' => 'PRES03', 'party =>'d')
+   *       )
+   *     )
+   *     'target_ids' => array('1', '2', '3', '4', '5', '6', '7'),
+   *   )
+   *
+   *  @param string $targetGroup A target ID.
    *
    * @return object A response object with an 'error' property containing a message 
    * or a 'data' property containing an array with keys/values: 
