@@ -363,7 +363,43 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
-
+  /**
+   * Public method to resolve targets.
+   *
+   * @param array $contact An array of required contact fields
+   *
+   * Structured similarly to:
+   *
+   *  array(
+   *    'first_name' => 'first name', //required\
+   *    'last_name' => last name
+   *    'email' => email
+   *    'address' => 
+   *    'address_2' => 
+   *    'city' => 
+   *    'state' => 
+   *    'country' => 
+   *    'zip' => a full zip+9 zip code
+   *    'phone' => 
+   *    'us_house_district' => 
+   *    'us_senate_district' => 
+   *    'state_house_district' => 
+   *    'state_senate_district' => 
+   *  )
+   *
+   *  @param string $messageId A message ID.
+   *
+   *  @param string $formId A formId ID.
+   *
+   * @return object A response object with an 'error' property containing a message 
+   * or a 'data' property containing an array: 
+   * 'status' => success, 
+   */
+  public function resolveTargets($contact, $messageId, $formId) {
+    $this->postFields = array('contact' => $contact, 'message_id' => $messageId, 'form_id' => $formId);
+    $response = $this->doRequest('POST', 'targets/resolve');
+    return $response;
+  }
 
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
@@ -393,6 +429,7 @@ class SpringboardAdvocacyAPIClient
       ),
       'POST' => array(
         'targets/custom',
+        'targets/resolve',
         'oauth/access-token',
         'target-groups',
 
