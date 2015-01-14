@@ -371,23 +371,24 @@ class SpringboardAdvocacyAPIClient
    * Structured similarly to:
    *
    *  array(
-   *    'first_name' => 'first name', //required\
-   *    'last_name' => last name
-   *    'email' => email
-   *    'address' => 
-   *    'address_2' => 
-   *    'city' => 
-   *    'state' => 
-   *    'country' => 
+   *    'first_name' => ''
+   *    'last_name' => ''
+   *    'email' => ''
+   *    'address' => ''
+   *    'address_2' => ''
+   *    'city' => ''
+   *    'state' => ''
+   *    'country' => ''
    *    'zip' => a full zip+9 zip code
-   *    'phone' => 
-   *    'us_house_district' => 
-   *    'us_senate_district' => 
-   *    'state_house_district' => 
-   *    'state_senate_district' => 
+   *    'phone' => ''
    *  )
    *
-   *  @param string $messageId A message ID.
+   *  @param array $message A message.
+   *  array(
+   *    'id' => 0
+   *    'subject' => ''
+   *    'body' => ''
+   *  )
    *
    *  @param string $formId A formId ID.
    *
@@ -395,8 +396,8 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing an array: 
    * 'status' => success, 
    */
-  public function resolveTargets($contact, $messageId, $formId) {
-    $this->postFields = array('contact' => $contact, 'message_id' => $messageId, 'form_id' => $formId);
+  public function resolveTargets($contact, $message, $formId) {
+    $this->postFields = array('contact' => $contact, 'message' => $messageId, 'form_id' => $formId);
     $response = $this->doRequest('POST', 'targets/resolve');
     return $response;
   }
