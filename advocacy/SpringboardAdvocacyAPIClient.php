@@ -331,6 +331,12 @@ class SpringboardAdvocacyAPIClient
    *       )
    *     )
    *     'target_ids' => array('1', '2', '3', '4', '5', '6', '7'),
+   *
+   *     'message' => array(
+   *       group_id =>
+   *       message_id =>
+   *       form_id =>
+   *      ),
    *   )
    *
    *  @param string $targetGroup A target ID.
@@ -385,7 +391,8 @@ class SpringboardAdvocacyAPIClient
    *
    *  @param array $message A message.
    *  array(
-   *    'id' => 0
+   *    'message_id' => 0
+   *    'form_id' =>
    *    'subject' => ''
    *    'body' => ''
    *  )
@@ -396,8 +403,8 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing an array: 
    * 'status' => success, 
    */
-  public function resolveTargets($contact, $message, $formId) {
-    $this->postFields = array('contact' => $contact, 'message' => $messageId, 'form_id' => $formId);
+  public function resolveTargets($contact, $message) {
+    $this->postFields = array('contact' => $contact, 'message' => $message);
     $response = $this->doRequest('POST', 'targets/resolve');
     return $response;
   }
