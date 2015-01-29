@@ -372,11 +372,11 @@ class SpringboardAdvocacyAPIClient
   /**
    * Public method to resolve targets.
    *
-   * @param array $contact An array of required contact fields
+   * @param array $ubmission An array of required contact fields
    *
    * Structured similarly to:
-   *
-   *  array(
+   *'contact' =>
+   *   array(
    *    'first_name' => ''
    *    'last_name' => ''
    *    'email' => ''
@@ -387,15 +387,16 @@ class SpringboardAdvocacyAPIClient
    *    'country' => ''
    *    'zip' => a full zip+9 zip code
    *    'phone' => ''
-   *  )
+   *  ) 
+   *  
+   *  'form_id' => 'string'
    *
-   *  @param array $message A message.
-   *  array(
-   *    'message_id' => 0
-   *    'form_id' =>
-   *    'subject' => ''
-   *    'body' => ''
-   *  )
+   *  'messages' => array(
+   *     0 => array('message_id' => '', 'subject =>'', body => ''),
+   *     1 => array('message_id' => '', 'subject' =>'', body => '')
+   *   )
+
+
    *
    *  @param string $formId A formId ID.
    *
@@ -403,8 +404,8 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing an array: 
    * 'status' => success, 
    */
-  public function resolveTargets($contact, $message) {
-    $this->postFields = array('contact' => $contact, 'message' => $message);
+  public function resolveTargets($submission) {
+    $this->postFields = array('submission' => $submission);
     $response = $this->doRequest('POST', 'targets/resolve');
     return $response;
   }
