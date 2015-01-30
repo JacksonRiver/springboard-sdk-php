@@ -182,7 +182,7 @@ class SpringboardAdvocacyAPIClient
    * @param string $params A query string in the format field_name=value
    * Possible fields include: role state gender party first_name last_name email
    *
-   * @return obj A response object with an 'error' property containing a message 
+   * @return object A response object with an 'error' property containing a message
    * or a 'data' property containing an array of Target objects filtered by account and optional params
    */
   public function getCustomTargets($params = NULL) {
@@ -405,7 +405,7 @@ class SpringboardAdvocacyAPIClient
    * 'status' => success, 
    */
   public function resolveTargets($submission) {
-    $this->postFields = array('submission' => $submission);
+    $this->postFields =  $submission;
     $response = $this->doRequest('POST', 'targets/resolve');
     return $response;
   }
