@@ -123,6 +123,19 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return all districts associated with a given zip code.
+   *
+   * @param string $abbr A state abbreviation.
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of district names q.
+   */
+  public function getDistrictsByState($abbr) {
+    $response = $this->doRequest('GET', 'districts/state', array('state' => $abbr));
+    return $response;
+  }
+
+  /**
    * Public method to return all Targets associated with a given search query.
    *
    *
@@ -429,6 +442,7 @@ class SpringboardAdvocacyAPIClient
       'GET' => array(
         'targets/legislators',
         'districts',
+        'districts/state',
         'targets',
         'targets/custom',
         'targets/search',
