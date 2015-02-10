@@ -292,6 +292,23 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return a target group by message id.
+   * A fail-safe in case the response to the api client fails
+   * after group creation
+   * and the calling application is unable to determine/save
+   * the message's group ID.
+   *
+   * @param string $id The Target Message ID.
+   *
+   * @return obj A response object with an 'error' property containing a message
+   * or a 'data' property containing a Target Group object
+   */
+  public function getTargetGroupByMessageID($message_id) {
+    $response = $this->doRequest('GET', 'target-groups/message/' . $message_id);
+    return $response;
+  }
+
+  /**
    * Public method to create a target group.
    *
    * @param array $targetGroup An multidimensional array of required
@@ -449,6 +466,7 @@ class SpringboardAdvocacyAPIClient
         'target-groups',
         'target-groups/group',
         'target-groups/search',
+        'target-groups/message',
       ),
       'POST' => array(
         'targets/custom',
