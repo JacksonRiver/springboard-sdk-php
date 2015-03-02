@@ -422,8 +422,8 @@ class SpringboardAdvocacyAPIClient
    *  'form_id' => 'string'
    *
    *  'messages' => array(
-   *     0 => array('message_id' => '', 'subject =>'', body => ''),
-   *     1 => array('message_id' => '', 'subject' =>'', body => '')
+   *     0 => array('message_id' => '', 'subject =>'', body => '', 'weight => '', 'precedence' => true/false),
+   *     1 => array('message_id' => '', 'subject' =>'', body => '', 'weight => '',  'precedence' => true/false)
    *   )
 
 
@@ -560,7 +560,7 @@ class SpringboardAdvocacyAPIClient
       return $response;
     }
     else {
-      throw new Exception('Did not receive a JSON response');
+      return 'Did not receive a JSON response';
     }
   }
 
