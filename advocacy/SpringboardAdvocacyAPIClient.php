@@ -440,6 +440,19 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
+  /**
+   * Public method to return metrics for a given period.
+   *
+   * @param string $period
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of metrics values.
+   */
+  public function getMetrics($period) {
+    $response = $this->doRequest( 'GET','metrics/'.$period);
+    return $response;
+  }
+
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('POST', 'oauth/access-token');
@@ -467,6 +480,11 @@ class SpringboardAdvocacyAPIClient
         'target-groups/group',
         'target-groups/search',
         'target-groups/message',
+        'metrics/daily',
+        'metrics/weekly',
+        'metrics/monthly',
+        'metrics/lifetime',
+        'metrics/failed',
       ),
       'POST' => array(
         'targets/custom',
@@ -603,7 +621,7 @@ class SpringboardAdvocacyAPIClient
     }
 
     if(!in_array($request_path, $methods[$http_method])) {
-        throw new Exception(t('@path api endpoint does not exist.', array('@path' => $request_path)));
+      throw new Exception('That api endpoint does not exist. ' .  $request_path);
     }
     return true;
   }
