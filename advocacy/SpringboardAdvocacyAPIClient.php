@@ -453,6 +453,24 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
+  /**
+   * Public method to return subscription information for an API account.
+   *
+   * @return object A response object with a 'subscription_type' property containing a string that
+   * represents the account subscription type. If the subscription type is 'states-selected' then
+   * a 'states_custom' array will also be returned containing all applicable states.
+   */
+  public function getSubscription() {
+    $response = $this->doRequest('GET', 'subscription');
+    return $response;
+  }
+
+  /**
+   * Public method to return an Oauth token.
+   *
+   * @return object A response object with an 'access_token' property containing a fresh access token for the API account
+   * and 'token_type' and 'expires_in'properties.
+   */
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('POST', 'oauth/access-token');
@@ -460,6 +478,11 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
+  /**
+   * Public method to set the Oauth token as the access credentials for this API user.
+   *
+   * @return void
+   */
   public function setToken($token) {
     $this->access_token = $token;
   }
@@ -485,6 +508,7 @@ class SpringboardAdvocacyAPIClient
         'metrics/monthly',
         'metrics/lifetime',
         'metrics/failed',
+        'subscription'
       ),
       'POST' => array(
         'targets/custom',
