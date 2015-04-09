@@ -466,11 +466,21 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Retrieve a list of committees
+   * @return string
+   */
+  public function getCommitteeList() {
+    $response = $this->doRequest('GET', 'committees/list');
+    return $response;
+  }
+
+  /**
    * Public method to return an Oauth token.
    *
    * @return object A response object with an 'access_token' property containing a fresh access token for the API account
    * and 'token_type' and 'expires_in'properties.
    */
+
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('POST', 'oauth/access-token');
@@ -508,7 +518,8 @@ class SpringboardAdvocacyAPIClient
         'metrics/monthly',
         'metrics/lifetime',
         'metrics/failed',
-        'subscription'
+        'subscription',
+        'committees/list',
       ),
       'POST' => array(
         'targets/custom',
