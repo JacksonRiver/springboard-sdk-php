@@ -613,17 +613,23 @@ class SpringboardAdvocacyAPIClient
     $this->validHttpVerb($http_method);
     $this->validApiMethod($request_path, $http_method);
 
-    if ($this->debug_mode) {
+    $url = $this->buildRequestUrl($request_path, $params);
+    $curl = $this->prepareCurl($url, $http_method);
+
+    // Send off the request.
+    $response = $this->sendCurlRequest($curl);
+
+    // Stash some debug information if debug mode is on.
+    if ($this->isDebugMode()) {
       $this->addDebugInfo('http_method', $http_method);
       $this->addDebugInfo('request_path', $request_path);
       $this->addDebugInfo('access_token', $this->access_token);
       $this->addDebugInfo('params', $params);
       $this->addDebugInfo('post_fields', $this->postFields);
+      $this->addDebugInfo('response', $response);
     }
 
-    $url = $this->buildRequestUrl($request_path, $params);
-    $curl = $this->prepareCurl($url, $http_method);
-    return $this->sendCurlRequest($curl);    // // Set curl options.
+    return $response;
   }
 
   /**
@@ -674,10 +680,6 @@ class SpringboardAdvocacyAPIClient
     $json = curl_exec($handle);
     curl_close($handle);
     $response = json_decode($json);
-
-    if ($this->debug_mode) {
-      $this->addDebugInfo('response', $response);
-    }
 
     if (!empty($response)) {
       return $response;
