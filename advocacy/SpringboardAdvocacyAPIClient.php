@@ -50,19 +50,38 @@ class SpringboardAdvocacyAPIClient
    */
   private $version_prefix = 'api/v1';
 
- /**
+  /**
    * The oauth client id
    *
    * @var string
    */
   private $client_id;
 
- /**
+  /**
    * The oauth secret
    *
    * @var string
    */
   private $client_secret;
+
+  /**
+   * Flag to toggle debug mode.
+   *
+   * @var boolean
+   */
+  private $debug_mode = FALSE;
+
+  /**
+   * Array to capture debug information.
+   *
+   * @var array
+   */
+  private $debug_info = array();
+
+  /**
+   * Array to store http post data.
+   */
+  private $postFields = array();
 
   /**
    * Constructor.
@@ -72,7 +91,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @return SpringboardAdvocacyAPIClient An instance of the SpringboardAdvocacyAPIClient class.
    */
-  public function __construct($url, $api_key = NULL) {
+  public function __construct($url, $api_key = NULL, $debug_mode = FALSE) {
     if (empty($api_key)) {
       //throw new Exception('API key is required.');
     }
@@ -83,6 +102,7 @@ class SpringboardAdvocacyAPIClient
 
     $this->api_key = $api_key;
     $this->url = $url;
+    $this->debug_mode = $debug_mode;
 
     return $this;
   }
@@ -97,11 +117,49 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to enable SDK debug mode.
+   */
+  public function enableDebugMode() {
+    $this->debug_mode = TRUE;
+  }
+
+  /**
+   * Public method to disable SDK debug mode.
+   */
+  public function disableDebugMode() {
+    $this->debug_mode = FALSE;
+  }
+
+  /**
+   * Public method to indicate if the SDK is in debug mode.
+   *
+   * @return boolean The current debug mode state.
+   */
+  public function isDebugMode() {
+    return $this->debug_mode;
+  }
+
+  /**
+   * Public method to return the latest SDK debug info.
+   *
+   * @return array Structured array of debug info with the following keys:
+   *         - http_method
+   *         - request_path
+   *         - params
+   *         - post_fields
+   *         - access_token
+   *         - response
+   */
+  public function getDebugInfo() {
+    return $this->debug_info;
+  }
+
+  /**
    * Public method to return all legislators that represent a given zip code.
    *
    * @param string $zip A full 9-digit US zip code in the format 99999-9999.
    *
-   * @return object A response object with an 'error' property containing a message 
+   * @return object A response object with an 'error' property containing a message
    * or a 'data' property containing an array of Legislators objects.
    */
   public function getLegislators($zip) {
@@ -114,7 +172,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @param string $zip A full 9-digit US zip code in the format 99999-9999.
    *
-   * @return object A response object with an 'error' property containing a message 
+   * @return object A response object with an 'error' property containing a message
    * or a 'data' property containing an array of districts keyed by legislative chamber.
    */
   public function getDistricts($zip) {
@@ -139,7 +197,7 @@ class SpringboardAdvocacyAPIClient
    * Public method to return all Targets associated with a given search query.
    *
    *
-   * @param  array  $params 
+   * @param  array  $params
    * An array containing search parameters, which may include:
    *
    * class_name
@@ -157,7 +215,7 @@ class SpringboardAdvocacyAPIClient
    * fields (whose value is comma-spearated field names of any of the above. May not implement this.)
    * values (who value is the comma-separated combined values of the combination field)
    *
-   * @return obj A response object with an 'error' property containing a message 
+   * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing an array containing an array of Target objects keyed by 'targets'
    * and a result count keyed by 'count'.
    */
@@ -170,17 +228,17 @@ class SpringboardAdvocacyAPIClient
    * Public method to return all Target Groups associated with a given search query.
    *
    *
-   * @param  array  $params 
+   * @param  array  $params
    * An array containing a search parameters, which must include:
    *
    * group-name
    *
    * and may include:
-   * 
+   *
    * limit
    * offset
    *
-   * @return obj A response object with an 'error' property containing a message 
+   * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing an array containing an array of Target objects keyed by 'targets'
    * and a result count keyed by 'count'.
    */
@@ -208,7 +266,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @param string $id The Target ID.
    *
-   * @return obj A response object with an 'error' property containing a message 
+   * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing a Target object
    */
   public function getCustomTarget($id) {
@@ -221,9 +279,9 @@ class SpringboardAdvocacyAPIClient
    *
    * @param array $target An array of required target field values.
    *
-   * @return object A response object with an 'error' property containing a message 
-   * or a 'data' property containing an array with keys/values: 
-   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]), 
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]),
    * 'id' => [target id];
    */
   public function createCustomTarget(array $target) {
@@ -238,9 +296,9 @@ class SpringboardAdvocacyAPIClient
    * @param array $target An array of required target field values.
    * @param string $target A target ID.
    *
-   * @return object A response object with an 'error' property containing a message 
-   * or a 'data' property containing an array with keys/values: 
-   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]), 
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]),
    * 'id' => [target id];
    */
 
@@ -255,9 +313,9 @@ class SpringboardAdvocacyAPIClient
    *
    * @param string $target A target ID.
    *
-   * @return object A response object with an 'error' property containing a message 
-   * or a 'data' property containing an array with keys/values: 
-   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]), 
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   * 'status' => array([string: target success/fail message], [string: address sucess/fail message]),
    * 'id' => [target id];
    */
 
@@ -270,7 +328,7 @@ class SpringboardAdvocacyAPIClient
   /**
    * Public method to return all Target Groups.
    *
-   * @return obj A response object with an 'error' property containing a message 
+   * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing an array of Target Group objects filtered by account and optional params
    */
   public function getTargetGroups() {
@@ -283,7 +341,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @param string $id The Target ID.
    *
-   * @return obj A response object with an 'error' property containing a message 
+   * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing a Target Group object
    */
   public function getTargetGroup($id) {
@@ -330,9 +388,9 @@ class SpringboardAdvocacyAPIClient
    *     'target_ids' => array('1', '2', '3', '4', '5', '6', '7'),
    *   )
    *
-   * @return object A response object with an 'error' property containing a message 
-   * or a 'data' property containing an array with keys/values: 
-   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]), 
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]),
    * 'id' => [target group id];
    */
   public function createTargetGroup(array $targetGroup) {
@@ -371,9 +429,9 @@ class SpringboardAdvocacyAPIClient
    *
    *  @param string $targetGroup A target ID.
    *
-   * @return object A response object with an 'error' property containing a message 
-   * or a 'data' property containing an array with keys/values: 
-   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]), 
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]),
    * 'id' => [target id];
    */
 
@@ -388,9 +446,9 @@ class SpringboardAdvocacyAPIClient
    *
    * @param string $targetGroup A target ID.
    *
-   * @return object A response object with an 'error' property containing a message 
-   * or a 'data' property containing an array with keys/values: 
-   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]), 
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   * 'status' => array([string: target group success/fail message], [string: chamber sucess/fail message]),
    * 'id' => [target id];
    */
 
@@ -417,8 +475,8 @@ class SpringboardAdvocacyAPIClient
    *    'country' => ''
    *    'zip' => a full zip+9 zip code
    *    'phone' => ''
-   *  ) 
-   *  
+   *  )
+   *
    *  'form_id' => 'string'
    *  'test_mode' => 'string'
    *  'test_email' => 'string'
@@ -427,14 +485,12 @@ class SpringboardAdvocacyAPIClient
    *     0 => array('message_id' => '', 'subject =>'', body => '', 'weight => '', 'precedence' => true/false),
    *     1 => array('message_id' => '', 'subject' =>'', body => '', 'weight => '',  'precedence' => true/false)
    *   )
-
-
    *
    *  @param string $formId A formId ID.
    *
-   * @return object A response object with an 'error' property containing a message 
-   * or a 'data' property containing an array: 
-   * 'status' => success, 
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array:
+   * 'status' => success,
    */
   public function resolveTargets($submission) {
     $this->postFields =  $submission;
@@ -557,9 +613,16 @@ class SpringboardAdvocacyAPIClient
     $this->validHttpVerb($http_method);
     $this->validApiMethod($request_path, $http_method);
 
+    if ($this->debug_mode) {
+      $this->addDebugInfo('http_method', $http_method);
+      $this->addDebugInfo('request_path', $request_path);
+      $this->addDebugInfo('access_token', $this->access_token);
+      $this->addDebugInfo('params', $params);
+      $this->addDebugInfo('post_fields', $this->postFields);
+    }
+
     $url = $this->buildRequestUrl($request_path, $params);
     $curl = $this->prepareCurl($url, $http_method);
-
     return $this->sendCurlRequest($curl);    // // Set curl options.
   }
 
@@ -611,6 +674,11 @@ class SpringboardAdvocacyAPIClient
     $json = curl_exec($handle);
     curl_close($handle);
     $response = json_decode($json);
+
+    if ($this->debug_mode) {
+      $this->addDebugInfo('response', $response);
+    }
+
     if (!empty($response)) {
       return $response;
     }
@@ -627,7 +695,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @return boolean True if the method exists.
    */
- 
+
   private function validHttpVerb($http_method)
   {
     $valid_verbs = array('GET', 'POST', 'PUT', 'DELETE');
@@ -646,7 +714,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @return boolean True if the method exists.
    */
- 
+
   private function validApiMethod($request_path, $http_method)
   {
     $methods = $this->getApiMethods();
@@ -690,6 +758,16 @@ class SpringboardAdvocacyAPIClient
     }
 
     return $url;
+  }
+
+  /**
+   * Private method to add debug info to a structure array.
+   *
+   * @param string $key The under which to store the debug value.
+   * @param mixed $value The debug info's value.
+   */
+  private function addDebugInfo($key, $value) {
+    $this->debug_info[$key] = $value;
   }
 
 }
