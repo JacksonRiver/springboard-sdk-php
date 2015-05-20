@@ -420,6 +420,8 @@ class SpringboardAdvocacyAPIClient
    *  ) 
    *  
    *  'form_id' => 'string'
+   *  'test_mode' => 'string'
+   *  'test_email' => 'string'
    *
    *  'messages' => array(
    *     0 => array('message_id' => '', 'subject =>'', body => '', 'weight => '', 'precedence' => true/false),
