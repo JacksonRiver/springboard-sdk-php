@@ -458,7 +458,7 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
-   * Public method to return target deliverability metrics.
+   * Public method to return target deliverability metrics given a form identifier.
    *
    * @param string $messageActionId The Message Action ID.
    *
@@ -472,7 +472,7 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
-   * Public method to return target deliverability metrics.
+   * Public method to return target deliverability metrics for a single target given a form identifier.
    *
    * @param $formId
    * @param $targetId
