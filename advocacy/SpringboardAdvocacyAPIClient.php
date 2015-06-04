@@ -472,6 +472,21 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return target deliverability metrics.
+   *
+   * @param $formId
+   * @param $targetId
+   * @return \obj A response object with an 'error' property containing a message
+   * or a 'data' property containing a list of deliverability metrics
+   *
+   */
+  public function getSingleTargetDeliverability($formId, $targetId) {
+
+    $response = $this->doRequest('GET', 'deliverability/action/' .$formId.'/target/'.$targetId);
+    return $response;
+  }
+
+  /**
    * Public method to resolve targets.
    *
    * @param array $ubmission An array of required contact fields
