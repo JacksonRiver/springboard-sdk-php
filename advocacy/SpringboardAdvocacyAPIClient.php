@@ -458,6 +458,20 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return target deliverability metrics.
+   *
+   * @param string $messageActionId The Message Action ID.
+   *
+   * @return obj A response object with an 'error' property containing a message
+   * or a 'data' property containing a list of deliverability metrics
+   */
+  public function getTargetDeliverability($formId) {
+
+    $response = $this->doRequest('GET', 'deliverability/action/' .$formId);
+    return $response;
+  }
+
+  /**
    * Public method to resolve targets.
    *
    * @param array $ubmission An array of required contact fields
@@ -571,6 +585,7 @@ class SpringboardAdvocacyAPIClient
         'target-groups/group',
         'target-groups/search',
         'target-groups/message',
+        'deliverability/action',
         'metrics/daily',
         'metrics/weekly',
         'metrics/monthly',
@@ -722,8 +737,15 @@ class SpringboardAdvocacyAPIClient
     $methods = $this->getApiMethods();
 
     // remove target ids from request path for validation.
-    if (count($paths = explode('/', $request_path)) == 3) {
-      unset($paths[2]);
+    if (count($paths = explode('/', $request_path)) >=3) {
+      // unset($paths[2]);
+
+      foreach($paths as $key =>$val) {
+        if($key>=2) {
+          unset($paths[$key]);
+        }
+      }
+
       $request_path = implode('/', $paths);
     }
 
