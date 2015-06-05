@@ -541,6 +541,33 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return queue time statistics for all messages.
+   *
+   * @param string $period
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of queue metrics.
+   */
+  public function getQueueMetrics() {
+    $response = $this->doRequest( 'GET','metrics/queue/all');
+    return $response;
+  }
+
+  /**
+   * Public method to return queue time statistics for messages by a given account.
+   *
+   * @param string $period
+   *
+   * @return object A response object with an 'error' property containing queue metrics
+   * or a 'data' property containing an array of an accounts queue metrics.
+   */
+  public function getQueueMetricsByAccount() {
+    $response = $this->doRequest( 'GET','metrics/queue');
+    return $response;
+  }
+
+
+  /**
    * Public method to return subscription information for an API account.
    *
    * @return object A response object with a 'subscription_type' property containing a string that
@@ -606,6 +633,8 @@ class SpringboardAdvocacyAPIClient
         'metrics/monthly',
         'metrics/lifetime',
         'metrics/failed',
+        'metrics/queue',
+        'metrics/queue/all',
         'subscription',
         'committees/list',
       ),
