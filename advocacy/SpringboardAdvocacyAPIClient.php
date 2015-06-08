@@ -541,6 +541,23 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return metrics hourly with filtering.
+   *
+   * @param string $period
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of metrics values.
+   */
+  public function getHourlyMetrics($constraint = null, $identifier = null) {
+
+    $endpoint = 'metrics/hourly'. ((!is_null($constraint) && !is_null($constraint)) ? '/'.$constraint.'/'.$identifier : '');
+
+    $response = $this->doRequest( 'GET',$endpoint);
+
+    return $response;
+  }
+
+  /**
    * Public method to return queue time statistics for all messages.
    *
    * @param string $period
@@ -628,6 +645,7 @@ class SpringboardAdvocacyAPIClient
         'target-groups/search',
         'target-groups/message',
         'deliverability/action',
+        'metrics/hourly',
         'metrics/daily',
         'metrics/weekly',
         'metrics/monthly',
