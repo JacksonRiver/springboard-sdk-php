@@ -583,6 +583,29 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
+  /**
+   * Public method to return API usage metrics for an API account.
+   *
+   * @param string $period
+   *
+   * @return object A 'data' property containing an array of API usage metrics.
+   */
+  public function getApiUseMetrics($period) {
+    $response = $this->doRequest( 'GET','metrics/api/'.$period);
+    return $response;
+  }
+
+  /**
+   * Public method to return API system alerts for an API account.
+   *
+   * @param string $period
+   *
+   * @return object A 'data' property containing an array of 'alerts' with system alert details.
+   */
+  public function getApiAlerts($type) {
+    $response = $this->doRequest( 'GET','api/alerts/'.$type);
+    return $response;
+  }
 
   /**
    * Public method to return subscription information for an API account.
@@ -653,6 +676,8 @@ class SpringboardAdvocacyAPIClient
         'metrics/failed',
         'metrics/queue',
         'metrics/queue/all',
+        'metrics/api',
+        'api/alerts',
         'subscription',
         'committees/list',
       ),
