@@ -629,6 +629,17 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to Submit a request for a CSV download of failed messages to be sent to the email supplied.
+   * @return string
+   */
+  public function getFailedMessagesDownload($messageId, $emailAddress) {
+    $this->postFields = array('message_id' => $messageId, 'email_address' => $emailAddress);
+
+    $response = $this->doRequest('POST', 'messages/download-failed-csv');
+    return $response;
+  }
+
+  /**
    * Public method to return an Oauth token.
    *
    * @return object A response object with an 'access_token' property containing a fresh access token for the API account
@@ -686,7 +697,7 @@ class SpringboardAdvocacyAPIClient
         'targets/resolve',
         'oauth/access-token',
         'target-groups',
-
+        'messages/download-failed-csv',
       ),
       'PUT' => array(
         'targets/custom',
