@@ -549,11 +549,8 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing an array of metrics values.
    */
   public function getHourlyMetrics($constraint = null, $identifier = null) {
-
     $endpoint = 'metrics/hourly'. ((!is_null($constraint) && !is_null($constraint)) ? '/'.$constraint.'/'.$identifier : '');
-
     $response = $this->doRequest( 'GET',$endpoint);
-
     return $response;
   }
 
@@ -580,6 +577,36 @@ class SpringboardAdvocacyAPIClient
    */
   public function getQueueMetricsByAccount() {
     $response = $this->doRequest( 'GET','metrics/queue');
+    return $response;
+  }
+
+  /**
+   * Public method to retrieve queue message metrics by status.
+   *
+   * @param string $node_id
+   * @param string $message_status
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   */
+  public function getQueueMessagesCountByStatus($node_id, $message_status) {
+    $params = array('alertId' => $node_id);
+    $response = $this->doRequest('GET', 'queues/'.strtolower($message_status), $params);
+    return $response;
+  }
+
+  /**
+   * Public method to modify queue messages status.
+   *
+   * @param string $node_id
+   * @param string $message_status
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   */
+  public function modifyQueueMessagesStatus($node_id, $message_status) {
+    $this->postFields = array('alertId' => $node_id);
+    $response = $this->doRequest('POST', 'queues/'.$message_status);
     return $response;
   }
 
@@ -634,7 +661,6 @@ class SpringboardAdvocacyAPIClient
    */
   public function getFailedMessagesDownload($messageId, $emailAddress) {
     $this->postFields = array('message_id' => $messageId, 'email_address' => $emailAddress);
-
     $response = $this->doRequest('POST', 'messages/download-failed-csv');
     return $response;
   }
@@ -649,7 +675,6 @@ class SpringboardAdvocacyAPIClient
   public function getToken($client_id, $client_secret) {
     $this->postFields = array('grant_type' => 'client_credentials', 'client_id' => $client_id, 'client_secret' => $client_secret);
     $response = $this->doRequest('POST', 'oauth/access-token');
-
     return $response;
   }
 
@@ -691,12 +716,19 @@ class SpringboardAdvocacyAPIClient
         'api/alerts',
         'subscription',
         'committees/list',
+        'queues/ready',
+        'queues/delivered',
+        'queues/paused',
+        'queues/canceled',
       ),
       'POST' => array(
         'targets/custom',
         'targets/resolve',
         'oauth/access-token',
         'target-groups',
+        'queues/pause',
+        'queues/restart',
+        'queues/cancel',
         'messages/download-failed-csv',
       ),
       'PUT' => array(
