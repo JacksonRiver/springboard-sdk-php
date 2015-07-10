@@ -596,6 +596,21 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to retrieve recent messages by alert id.
+   *
+   * @param string $node_id
+   * @param int $count
+   *
+   * @return object A response object with an 'messages' property containing a list of messages
+   * and a 'messageCount' property indicating the count of messages returned.
+   */
+  public function getRecentMessagesByAlertId($node_id, $count = 25) {
+    $params = array('count' => $count);
+    $response = $this->doRequest('GET', 'metrics/recent/'.$node_id, $params);
+    return $response;
+  }
+
+  /**
    * Public method to modify queue messages status.
    *
    * @param string $node_id
@@ -713,6 +728,7 @@ class SpringboardAdvocacyAPIClient
         'metrics/queue',
         'metrics/queue/all',
         'metrics/api',
+        'metrics/recent',
         'api/alerts',
         'subscription',
         'committees/list',
@@ -729,7 +745,7 @@ class SpringboardAdvocacyAPIClient
         'queues/pause',
         'queues/restart',
         'queues/cancel',
-        'messages/download-failed-csv',
+        'messages/download-failed-csv'
       ),
       'PUT' => array(
         'targets/custom',
