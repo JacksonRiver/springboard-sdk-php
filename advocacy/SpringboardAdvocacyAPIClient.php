@@ -681,6 +681,14 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to Submit a request for a CSV download of failed messages to be sent to the email supplied.
+   * @return string
+   */
+  public function getMaintenanceMode() {
+    $response = $this->doRequest('GET', 'health-check');
+    return $response;
+  }
+  /**
    * Public method to return an Oauth token.
    *
    * @return object A response object with an 'access_token' property containing a fresh access token for the API account
@@ -736,6 +744,7 @@ class SpringboardAdvocacyAPIClient
         'queues/delivered',
         'queues/paused',
         'queues/canceled',
+        'health-check'
       ),
       'POST' => array(
         'targets/custom',
