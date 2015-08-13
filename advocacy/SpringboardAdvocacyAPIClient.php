@@ -685,7 +685,7 @@ class SpringboardAdvocacyAPIClient
    * @return string
    */
   public function getMaintenanceMode() {
-    $response = $this->doRequest('GET', 'health-check');
+    $response = $this->doRequest('GET', 'app/maintenance/status');
     return $response;
   }
   /**
@@ -744,7 +744,7 @@ class SpringboardAdvocacyAPIClient
         'queues/delivered',
         'queues/paused',
         'queues/canceled',
-        'health-check'
+        'app/maintenance/status'
       ),
       'POST' => array(
         'targets/custom',
@@ -850,7 +850,6 @@ class SpringboardAdvocacyAPIClient
     $json = curl_exec($handle);
     curl_close($handle);
     $response = json_decode($json);
-
     if (!empty($response)) {
       return $response;
     }
@@ -896,14 +895,13 @@ class SpringboardAdvocacyAPIClient
       // unset($paths[2]);
 
       foreach($paths as $key =>$val) {
-        if($key>=2) {
+        if($key >= 2 && $val!='status') {
           unset($paths[$key]);
         }
       }
 
       $request_path = implode('/', $paths);
     }
-
     if(!in_array($request_path, $methods[$http_method])) {
       throw new Exception('That api endpoint does not exist. ' .  $request_path);
     }
