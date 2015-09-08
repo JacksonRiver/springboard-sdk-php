@@ -744,6 +744,7 @@ class SpringboardAdvocacyAPIClient
         'queues/delivered',
         'queues/paused',
         'queues/canceled',
+        'queues/hold',
         'app/maintenance/status'
       ),
       'POST' => array(
