@@ -626,6 +626,51 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to set messages in hold status to failed status.
+   *
+   * @param string $node_id
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with a 'message' and a 'items_updated' count of affected items.
+   */
+  public function failHeldMessages($node_id) {
+
+    $this->postFields = array('alertId' => $node_id);
+
+    $response = $this->doRequest('POST', 'alert/fail-held-messages');
+
+    return $response;
+  }
+
+  /**
+   * Public method to modify queue messages state.
+   *
+   * @param array $target An array of required target field values.
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array with keys/values:
+   * 'status' => array([string: target success/fail message], [string: address success/fail message]),
+   * 'id' => [target id];
+   */
+  public function modifyQueueMessagesState($message_state) {
+    $this->postFields = array('message_state' => $message_state);
+    $response = $this->doRequest('POST', 'messages/custom');
+    return $response;
+  }
+
+  /**
+   * Public method to return message action metrics by action id.
+   *
+   * @param string $actionId
+   *
+   * @return object A 'data' property containing an array of message action metrics.
+   */
+  public function getMessageActionMetrics($actionId) {
+    $response = $this->doRequest( 'GET','metrics/action/'.$actionId);
+    return $response;
+  }
+
+  /**
    * Public method to return API usage metrics for an API account.
    *
    * @param string $period
@@ -710,7 +755,7 @@ class SpringboardAdvocacyAPIClient
     $this->access_token = $token;
   }
 
-   /**
+  /**
    * Method to describe the available service methods.
    */
   public function getApiMethods() {
@@ -737,6 +782,7 @@ class SpringboardAdvocacyAPIClient
         'metrics/queue/all',
         'metrics/api',
         'metrics/recent',
+        'metrics/action',
         'api/alerts',
         'subscription',
         'committees/list',
@@ -755,7 +801,8 @@ class SpringboardAdvocacyAPIClient
         'queues/pause',
         'queues/restart',
         'queues/cancel',
-        'messages/download-failed-csv'
+        'messages/download-failed-csv',
+        'alert/fail-held-messages'
       ),
       'PUT' => array(
         'targets/custom',
