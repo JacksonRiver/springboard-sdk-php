@@ -716,6 +716,19 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return a message.
+   *
+   * @return obj A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of message data.
+   */
+  public function getMessage($messageId) {
+    // $this->postFields = array('message_id' => $messageId);
+    // $response = $this->doRequest('GET', 'message');
+    $response = $this->doRequest( 'GET','message/get/'.$messageId);
+    return $response;
+  }
+
+  /**
    * Public method to Submit a request for a CSV download of failed messages to be sent to the email supplied.
    * @return string
    */
@@ -772,6 +785,7 @@ class SpringboardAdvocacyAPIClient
         'target-groups/search',
         'target-groups/message',
         'deliverability/action',
+        'message/get',
         'metrics/hourly',
         'metrics/daily',
         'metrics/weekly',
@@ -860,28 +874,28 @@ class SpringboardAdvocacyAPIClient
    */
   private function prepareCurl($url, $http_method) {
 
-      // Set curl options.
-      $options = array(
-        CURLOPT_USERAGENT => self::USER_AGENT,
-        CURLOPT_HEADER => false,
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 10,
-      );
+    // Set curl options.
+    $options = array(
+      CURLOPT_USERAGENT => self::USER_AGENT,
+      CURLOPT_HEADER => false,
+      CURLOPT_URL => $url,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_TIMEOUT => 10,
+    );
 
-      if (!empty($this->postFields) &&  ($http_method == "PUT" || $http_method == "POST")) {
-        $options[CURLOPT_POSTFIELDS] = http_build_query($this->postFields);
-      }
+    if (!empty($this->postFields) &&  ($http_method == "PUT" || $http_method == "POST")) {
+      $options[CURLOPT_POSTFIELDS] = http_build_query($this->postFields);
+    }
 
-      if ($http_method == "DELETE" || $http_method == "PUT") {
-        $options[CURLOPT_CUSTOMREQUEST] = $http_method;
-      }
+    if ($http_method == "DELETE" || $http_method == "PUT") {
+      $options[CURLOPT_CUSTOMREQUEST] = $http_method;
+    }
 
-      if (!empty($this->access_token)) {
-        $options[CURLOPT_HTTPHEADER] = array('Authorization: Bearer ' . $this->access_token);
-      }
+    if (!empty($this->access_token)) {
+      $options[CURLOPT_HTTPHEADER] = array('Authorization: Bearer ' . $this->access_token);
+    }
 
-      return $options;
+    return $options;
   }
 
   /**
@@ -919,7 +933,7 @@ class SpringboardAdvocacyAPIClient
   {
     $valid_verbs = array('GET', 'POST', 'PUT', 'DELETE');
     if (!in_array($http_method, $valid_verbs)) {
-        throw new Exception('Method does not exist.');
+      throw new Exception('Method does not exist.');
     }
     return true;
   }
