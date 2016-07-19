@@ -200,7 +200,7 @@ class SpringboardAdvocacyAPIClient
    * @param  array  $params
    * An array containing search parameters, which may include:
    *
-   * class_name
+   * class_name // "legislator" or "target" (for custom targets)
    * last_name
    * gender
    * party
@@ -226,7 +226,7 @@ class SpringboardAdvocacyAPIClient
 
   /**
    * Public method to return all Target Groups associated with a given search query.
-   *
+   * @NOTE not used yet
    *
    * @param  array  $params
    * An array containing a search parameters, which must include:
@@ -235,6 +235,7 @@ class SpringboardAdvocacyAPIClient
    *
    * and may include:
    *
+   * is_template @TODO boolean
    * limit
    * offset
    *
@@ -376,6 +377,7 @@ class SpringboardAdvocacyAPIClient
    *
    *  array(
    *    'name' => 'group name', //required
+   *    'is_template' => 0, // required
    *    'chambers' => array(
    *         0 => array('chamber' => 'fs', 'party =>'r', state => 'MA'),
    *         1 => array('chamber' => 'fs', 'party =>'d', state => 'MA')
@@ -394,6 +396,10 @@ class SpringboardAdvocacyAPIClient
    * 'id' => [target group id];
    */
   public function createTargetGroup(array $targetGroup) {
+    // Set default for is_template
+    if(!isset($targetGroup['is_template'])) {
+      $targetGroup['is_template'] = 0;
+    }
     $this->postFields = $targetGroup;
     $response = $this->doRequest('POST', 'target-groups');
     return $response;
@@ -409,6 +415,7 @@ class SpringboardAdvocacyAPIClient
    *
    *  array(
    *    'name' => 'group name', //required
+   *    'is_template' => 0, //required boolean @TODO
    *    'chambers' => array(
    *         0 => array('chamber' => 'fs', 'party =>'r', state => 'MA'),
    *         1 => array('chamber' => 'fs', 'party =>'d', state => 'MA')
