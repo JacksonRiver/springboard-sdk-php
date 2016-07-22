@@ -244,7 +244,37 @@ class SpringboardAdvocacyAPIClient
    * and a result count keyed by 'count'.
    */
   public function searchTargetGroups($params = NULL) {
-    $response = $this->doRequest('GET', 'target-groups/search', $params);
+    //$response = $this->doRequest('GET', 'target-groups/search', $params);
+    //fake response for now
+    $response = new stdClass();
+    $response->status_code = 200;
+    $response->data = new stdClass();
+    $response->data->count = 3;
+    $response->data->ids = array('1234', '1235', '1236');
+    $response->data->targets = array();
+    $response->data->targets[] = (object) [
+      'id' => "1234",
+      'account_id' => '1',
+      'class_name' => 'group',
+      'is_template' => 1,
+      'group_name' => 'test group',
+    ];
+
+    $response->data->targets[] = (object) [
+      'id' => "1235",
+      'account_id' => '2',
+      'class_name' => 'group',
+      'is_template' => 1,
+      'group_name' => 'fake gg group',
+    ];
+    $response->data->targets[] = (object) [
+      'id' => "1236",
+      'account_id' => '3',
+      'class_name' => 'group',
+      'is_template' => 1,
+      'group_name' => 'fakers',
+    ];
+
     return $response;
   }
 
@@ -448,6 +478,23 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
+  /**
+   * Public method to determine whether a custom group is used in a message
+   *
+   * @param string $targetGroup A target ID.
+   *
+   * @return boolean true of the group is used in at least one message, false if not.
+   */
+   public function targetGroupInUse($targetGroup) {
+     //@TODO functionality on transaction server needed.
+     // Dummy response for now
+     if($targetGroup == 3) {
+       return TRUE;
+     }
+     else {
+       return FALSE;
+     }
+   }
   /**
    * Public method to delete a target group.
    *
