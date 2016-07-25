@@ -83,6 +83,35 @@ class SpringboardAdvocacyAPIClient
    */
   private $postFields = array();
 
+  /** Dummy content for testing @TODO remove*/
+
+  public function buildDummyContent() {
+    $dummy_groups = array();
+    $dummy_groups['1234'] = (object) [
+      'id' => "1234",
+      'account_id' => '1',
+      'class_name' => 'group',
+      'is_template' => 1,
+      'group_name' => 'test group',
+      'recipients' => '{&quot;0&quot;:{&quot;party&quot;:&quot;D&quot;,&quot;class_name&quot;:&quot;Legislator&quot;},&quot;1&quot;:{&quot;id&quot;:3373,&quot;type&quot;:&quot;Legislator&quot;,&quot;group_name&quot;:&quot;&quot;,&quot;first&quot;:&quot;Catherine&quot;,&quot;last&quot;:&quot;Abercrombie&quot;,&quot;sal&quot;:&quot;Rep.&quot;,&quot;twitter&quot;:&quot;&quot;,&quot;facebook&quot;:&quot;http%3A//www.facebook.com/StateRepAbercrombie&quot;,&quot;org&quot;:&quot;State%20House&quot;,&quot;title&quot;:&quot;State%20Representative&quot;,&quot;state&quot;:&quot;CT&quot;,&quot;district&quot;:&quot;Connecticut%20House%20District%20083&quot;,&quot;party&quot;:&quot;D&quot;}}',
+    ];
+    $dummy_groups['1235'] = (object) [
+      'id' => "1235",
+      'account_id' => '2',
+      'class_name' => 'group',
+      'is_template' => 1,
+      'group_name' => 'fake gg group',
+    ];
+    $dummy_groups['1236'] = (object) [
+      'id' => "1236",
+      'account_id' => '3',
+      'class_name' => 'group',
+      'is_template' => 1,
+      'group_name' => 'fakers',
+    ];
+    return $dummy_groups;
+  }
+
   /**
    * Constructor.
    *
@@ -249,31 +278,10 @@ class SpringboardAdvocacyAPIClient
     $response = new stdClass();
     $response->status_code = 200;
     $response->data = new stdClass();
-    $response->data->count = 3;
-    $response->data->ids = array('1234', '1235', '1236');
-    $response->data->targets = array();
-    $response->data->targets[] = (object) [
-      'id' => "1234",
-      'account_id' => '1',
-      'class_name' => 'group',
-      'is_template' => 1,
-      'group_name' => 'test group',
-    ];
-
-    $response->data->targets[] = (object) [
-      'id' => "1235",
-      'account_id' => '2',
-      'class_name' => 'group',
-      'is_template' => 1,
-      'group_name' => 'fake gg group',
-    ];
-    $response->data->targets[] = (object) [
-      'id' => "1236",
-      'account_id' => '3',
-      'class_name' => 'group',
-      'is_template' => 1,
-      'group_name' => 'fakers',
-    ];
+    $dummy_groups = $this->buildDummyContent();
+    $response->data->count = count($dummy_groups);
+    $response->data->ids = array_keys($dummy_groups);
+    $response->data->targets = $dummy_groups;
 
     return $response;
   }
@@ -363,7 +371,15 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing an array of Target Group objects filtered by account and optional params
    */
   public function getTargetGroups() {
-    $response = $this->doRequest('GET', 'target-groups');
+    //$response = $this->doRequest('GET', 'target-groups');
+    //dummy response
+    $response = new stdClass();
+    $response->status_code = 200;
+    $response->data = new stdClass();
+    $dummy_groups = $this->buildDummyContent();
+    $response->data->count = count($dummy_groups);
+    $response->data->ids = array_keys($ummy_groups);
+    $response->data->targets = $dummy_groups;
     return $response;
   }
 
@@ -376,7 +392,12 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing a Target Group object
    */
   public function getTargetGroup($id) {
-    $response = $this->doRequest('GET', 'target-groups/group/' . $id);
+    //$response = $this->doRequest('GET', 'target-groups/group/' . $id);
+    // dummy response
+    $response = new stdClass();
+    $response->status_code = 200;
+    $dummy_groups = $this->buildDummyContent();
+    $response->data = $dummy_groups[$id];
     return $response;
   }
 
