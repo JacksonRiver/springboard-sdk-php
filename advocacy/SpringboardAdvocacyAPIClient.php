@@ -264,7 +264,6 @@ class SpringboardAdvocacyAPIClient
    *
    * and may include:
    *
-   * is_template @TODO boolean
    * limit
    * offset
    *
@@ -273,15 +272,17 @@ class SpringboardAdvocacyAPIClient
    * and a result count keyed by 'count'.
    */
   public function searchTargetGroups($params = NULL) {
-    //$response = $this->doRequest('GET', 'target-groups/search', $params);
+    // Only allow for searching of editable custom groups.
+    //$params['is_template'] = 1; @TODO - restore this
+    $response = $this->doRequest('GET', 'target-groups/search', $params);
     //fake response for now
-    $response = new stdClass();
-    $response->status_code = 200;
-    $response->data = new stdClass();
+    $dummyResponse = new stdClass();
+    $dummyResponse->status_code = 200;
+    $dummyResponse->data = new stdClass();
     $dummy_groups = $this->buildDummyContent();
-    $response->data->count = count($dummy_groups);
-    $response->data->ids = array_keys($dummy_groups);
-    $response->data->targets = $dummy_groups;
+    $dummyResponse->data->count = count($dummy_groups);
+    $dummyResponse->data->ids = array_keys($dummy_groups);
+    $dummyResponse->data->targets = $dummy_groups;
 
     return $response;
   }
@@ -371,16 +372,16 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing an array of Target Group objects filtered by account and optional params
    */
   public function getTargetGroups() {
-    //$response = $this->doRequest('GET', 'target-groups');
+    $response = $this->doRequest('GET', 'target-groups');
     //dummy response
-    $response = new stdClass();
-    $response->status_code = 200;
-    $response->data = new stdClass();
+    $dummyResponse = new stdClass();
+    $dummyResponse->status_code = 200;
+    $dummyResponse->data = new stdClass();
     $dummy_groups = $this->buildDummyContent();
-    $response->data->count = count($dummy_groups);
-    $response->data->ids = array_keys($ummy_groups);
-    $response->data->targets = $dummy_groups;
-    return $response;
+    $dummyResponse->data->count = count($dummy_groups);
+    $dummyResponse->data->ids = array_keys($dummy_groups);
+    $dummyResponse->data->targets = $dummy_groups;
+    return $dummyResponse;
   }
 
   /**
@@ -392,12 +393,12 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing a Target Group object
    */
   public function getTargetGroup($id) {
-    //$response = $this->doRequest('GET', 'target-groups/group/' . $id);
+    $response = $this->doRequest('GET', 'target-groups/group/' . $id);
     // dummy response
-    $response = new stdClass();
-    $response->status_code = 200;
+    $dummyResponse = new stdClass();
+    $dummyResponse->status_code = 200;
     $dummy_groups = $this->buildDummyContent();
-    $response->data = $dummy_groups[$id];
+    $dummyResponse->data = $dummy_groups[$id];
     return $response;
   }
 
@@ -485,7 +486,7 @@ class SpringboardAdvocacyAPIClient
    *      ),
    *   )
    *
-   *  @param string $targetGroup A target ID.
+   *  @param string $id A target ID.
    *
    * @return object A response object with an 'error' property containing a message
    * or a 'data' property containing an array with keys/values:
@@ -504,7 +505,7 @@ class SpringboardAdvocacyAPIClient
    *
    * @param string $targetGroup A target ID.
    *
-   * @return boolean true of the group is used in at least one message, false if not.
+   * @return boolean true of the group is used in at least one message or group, false if not.
    */
    public function targetGroupInUse($targetGroup) {
      //@TODO functionality on transaction server needed.
