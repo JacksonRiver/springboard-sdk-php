@@ -456,7 +456,7 @@ class SpringboardAdvocacyAPIClient
     $dummyResponse->data->count = count($dummy_groups);
     $dummyResponse->data->ids = array_keys($dummy_groups);
     $dummyResponse->data->targets = $dummy_groups;
-    return $dummyResponse;
+    return $response;
   }
 
   /**
