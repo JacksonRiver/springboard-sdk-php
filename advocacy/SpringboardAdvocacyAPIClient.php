@@ -83,32 +83,106 @@ class SpringboardAdvocacyAPIClient
    */
   private $postFields = array();
 
-  /** Dummy content for testing @TODO remove*/
+  /** Dummy content for testing @TODO remove
+   * @return obj A response object with an 'error' property containing a message
+   * or a 'data' property containing a Target Group object with the properties:
+   *  - string id
+   *      transaction server ID of the group
+   *  - string name
+   *      human-readable name
+   *  - string account_id
+   *  - string is_template
+   *      Flag to signify if the group is editable
+   *  - string created_at
+   *  - string updated_at
+   *  - array parents
+   *      an array of group IDs for any groups that contain this group as targets.
+   *  - array chambers
+   *  - array executives
+   *  - array targets
+   *      an array of individual target IDs
+   *  - array groups
+   *      an array of child group IDs
+   *  - array messages
+   *      data about the parent message, if applicable (@todo is it an object?) */
 
   public function buildDummyContent() {
     $dummy_groups = array();
+    // unused custom group
+    $dummy_groups['11'] = (object) [
+      'id' => "11",
+      'account_id' => '1',
+      'is_template' => 1,
+      'name' => 'unused group',
+      'parents' => array(),
+      'chambers' => array(),
+      'executives' => array(),
+      'targets' => array(
+        array('target_group_id' => '1234', 'target_id' => '3'),
+        array('target_group_id' => '1234', 'target_id' => '23'),
+        array('target_group_id' => '1234', 'target_id' => '36'),
+        array('target_group_id' => '1234', 'target_id' => '44'),
+      ),
+      'groups' => array(1235),
+    ];
+    // custom group w/ indv. targets, child of custom group
+    $dummy_groups['1235'] = (object) [
+      'id' => "1235",
+      'account_id' => '1',
+      'is_template' => 1,
+      'name' => 'child group',
+      'parents' => array("1234", "11"),
+      'chambers' => array(),
+      'executives' => array(),
+      'targets' => array(
+        array('target_group_id' => '1234', 'target_id' => '3'),
+        array('target_group_id' => '1234', 'target_id' => '23'),
+        array('target_group_id' => '1234', 'target_id' => '36'),
+        array('target_group_id' => '1234', 'target_id' => '44'),
+      ),
+      'groups' => array(),
+    ];
+    // custom group /w child group that is child of a message group
     $dummy_groups['1234'] = (object) [
       'id' => "1234",
       'account_id' => '1',
-      'class_name' => 'group',
       'is_template' => 1,
-      'group_name' => 'test group',
-      'recipients' => '{&quot;0&quot;:{&quot;party&quot;:&quot;D&quot;,&quot;class_name&quot;:&quot;Legislator&quot;},&quot;1&quot;:{&quot;id&quot;:3373,&quot;type&quot;:&quot;Legislator&quot;,&quot;group_name&quot;:&quot;&quot;,&quot;first&quot;:&quot;Catherine&quot;,&quot;last&quot;:&quot;Abercrombie&quot;,&quot;sal&quot;:&quot;Rep.&quot;,&quot;twitter&quot;:&quot;&quot;,&quot;facebook&quot;:&quot;http%3A//www.facebook.com/StateRepAbercrombie&quot;,&quot;org&quot;:&quot;State%20House&quot;,&quot;title&quot;:&quot;State%20Representative&quot;,&quot;state&quot;:&quot;CT&quot;,&quot;district&quot;:&quot;Connecticut%20House%20District%20083&quot;,&quot;party&quot;:&quot;D&quot;}}',
+      'name' => 'group w/ children',
+      'parents' => array("1236"),
+      'chambers' => array(),
+      'executives' => array(),
+      'targets' => array(
+        array('target_group_id' => '1234', 'target_id' => '3'),
+        array('target_group_id' => '1234', 'target_id' => '23'),
+        array('target_group_id' => '1234', 'target_id' => '36'),
+        array('target_group_id' => '1234', 'target_id' => '44'),
+      ),
+      'groups' => array(
+        array('target_group_id' => '1234', 'target_id' => '1235'),
+      ),
     ];
-    $dummy_groups['1235'] = (object) [
-      'id' => "1235",
-      'account_id' => '2',
-      'class_name' => 'group',
-      'is_template' => 1,
-      'group_name' => 'fake gg group',
-    ];
+
+    $messages = new stdClass();
+    $messages->target_group_id = "523";
+    $messages->message_id = "Master-Example-Me-57a4fd6b96afc";
+    $mesages->form_id = "Master-Clone-of-E-577d8203834d45";
+
+    // A message group w/ child group
     $dummy_groups['1236'] = (object) [
       'id' => "1236",
-      'account_id' => '3',
-      'class_name' => 'group',
-      'is_template' => 1,
-      'group_name' => 'fakers',
+      'account_id' => '1',
+      'is_template' => 0,
+      'name' => 'Fake Message Group',
+      'parents' => array(),
+      'chambers' => array(),
+      'executives' => array(),
+      'targets' => array(),
+      'groups' => array(
+        array('target_group_id' => '1236', 'target_id' => '1234'),
+      ),
+      'messages' => $messages,
     ];
+
     return $dummy_groups;
   }
 
@@ -273,7 +347,8 @@ class SpringboardAdvocacyAPIClient
    */
   public function searchTargetGroups($params = NULL) {
     // Only allow for searching of editable custom groups.
-    //$params['is_template'] = 1; @TODO - restore this
+    //$params['is_template'] = 1;
+
     $response = $this->doRequest('GET', 'target-groups/search', $params);
     //fake response for now
     $dummyResponse = new stdClass();
@@ -390,7 +465,27 @@ class SpringboardAdvocacyAPIClient
    * @param string $id The Target ID.
    *
    * @return obj A response object with an 'error' property containing a message
-   * or a 'data' property containing a Target Group object
+   * or a 'data' property containing a Target Group object with the properties:
+   *  - string id
+   *      transaction server ID of the group
+   *  - string name
+   *      human-readable name
+   *  - string account_id
+   *  - string is_template
+   *      Flag to signify if the group is editable
+   *  - string created_at
+   *  - string updated_at
+   *  - array parents
+   *      an array of group IDs for any groups that contain this group as targets.
+   *  - array chambers
+   *  - array executives
+   *  - array targets
+   *      an array of individual target IDs
+   *  - array groups
+   *      an array of child group IDs
+   *  - obj messages
+   *      data about the parent message, if applicable
+   *
    */
   public function getTargetGroup($id) {
     $response = $this->doRequest('GET', 'target-groups/group/' . $id);
@@ -440,6 +535,7 @@ class SpringboardAdvocacyAPIClient
    *       )
    *     )
    *     'target_ids' => array('1', '2', '3', '4', '5', '6', '7'),
+   *     'groups' => array()
    *   )
    *
    * @return object A response object with an 'error' property containing a message
