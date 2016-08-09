@@ -83,109 +83,6 @@ class SpringboardAdvocacyAPIClient
    */
   private $postFields = array();
 
-  /** Dummy content for testing @TODO remove
-   * @return obj A response object with an 'error' property containing a message
-   * or a 'data' property containing a Target Group object with the properties:
-   *  - string id
-   *      transaction server ID of the group
-   *  - string name
-   *      human-readable name
-   *  - string account_id
-   *  - string is_template
-   *      Flag to signify if the group is editable
-   *  - string created_at
-   *  - string updated_at
-   *  - array parents
-   *      an array of group IDs for any groups that contain this group as targets.
-   *  - array chambers
-   *  - array executives
-   *  - array targets
-   *      an array of individual target IDs
-   *  - array groups
-   *      an array of child group IDs
-   *  - array messages
-   *      data about the parent message, if applicable (@todo is it an object?) */
-
-  public function buildDummyContent() {
-    $dummy_groups = array();
-    // unused custom group
-    $dummy_groups['11'] = (object) [
-      'id' => "11",
-      'account_id' => '1',
-      'is_template' => 1,
-      'name' => 'unused group',
-      'parents' => array(),
-      'chambers' => array(),
-      'executives' => array(),
-      'targets' => array(
-        array('target_group_id' => '1234', 'target_id' => '3'),
-        array('target_group_id' => '1234', 'target_id' => '23'),
-        array('target_group_id' => '1234', 'target_id' => '36'),
-        array('target_group_id' => '1234', 'target_id' => '44'),
-      ),
-      'groups' => array(1235),
-    ];
-    // custom group w/ indv. targets, child of custom group
-    $dummy_groups['1235'] = (object) [
-      'id' => "1235",
-      'account_id' => '1',
-      'is_template' => 1,
-      'name' => 'child group',
-      'parents' => array("1234", "11"),
-      'chambers' => array(),
-      'executives' => array(),
-      'targets' => array(
-        array('target_group_id' => '1234', 'target_id' => '3'),
-        array('target_group_id' => '1234', 'target_id' => '23'),
-        array('target_group_id' => '1234', 'target_id' => '36'),
-        array('target_group_id' => '1234', 'target_id' => '44'),
-      ),
-      'groups' => array(),
-    ];
-    // custom group /w child group that is child of a message group
-    $dummy_groups['1234'] = (object) [
-      'id' => "1234",
-      'account_id' => '1',
-      'is_template' => 1,
-      'name' => 'group w/ children',
-      'parents' => array("1236"),
-      'chambers' => array(),
-      'executives' => array(),
-      'targets' => array(
-        array('target_group_id' => '1234', 'target_id' => '3'),
-        array('target_group_id' => '1234', 'target_id' => '23'),
-        array('target_group_id' => '1234', 'target_id' => '36'),
-        array('target_group_id' => '1234', 'target_id' => '44'),
-      ),
-      'groups' => array(
-        array('target_group_id' => '1234', 'target_id' => '1235'),
-      ),
-    ];
-
-    $messages = new stdClass();
-    $messages->target_group_id = "523";
-    $messages->message_id = "Master-Example-Me-57a4fd6b96afc";
-    $mesages->form_id = "Master-Clone-of-E-577d8203834d45";
-
-    // A message group w/ child group
-    $dummy_groups['1236'] = (object) [
-      'id' => "1236",
-      'account_id' => '1',
-      'is_template' => 0,
-      'name' => 'Fake Message Group',
-      'parents' => array(),
-      'chambers' => array(),
-      'executives' => array(),
-      'targets' => array(),
-      'groups' => array(
-        array('target_group_id' => '1236', 'target_id' => '1234'),
-      ),
-      'messages' => $messages,
-    ];
-
-    return $dummy_groups;
-  }
-
   /**
    * Constructor.
    *
@@ -347,18 +244,9 @@ class SpringboardAdvocacyAPIClient
    */
   public function searchTargetGroups($params = NULL) {
     // Only allow for searching of editable custom groups.
-    //$params['is_template'] = 1;
+    $params['is_template'] = 1;
 
     $response = $this->doRequest('GET', 'target-groups/search', $params);
-    //fake response for now
-    $dummyResponse = new stdClass();
-    $dummyResponse->status_code = 200;
-    $dummyResponse->data = new stdClass();
-    $dummy_groups = $this->buildDummyContent();
-    $dummyResponse->data->count = count($dummy_groups);
-    $dummyResponse->data->ids = array_keys($dummy_groups);
-    $dummyResponse->data->targets = $dummy_groups;
-
     return $response;
   }
 
@@ -448,14 +336,6 @@ class SpringboardAdvocacyAPIClient
    */
   public function getTargetGroups() {
     $response = $this->doRequest('GET', 'target-groups');
-    //dummy response
-    $dummyResponse = new stdClass();
-    $dummyResponse->status_code = 200;
-    $dummyResponse->data = new stdClass();
-    $dummy_groups = $this->buildDummyContent();
-    $dummyResponse->data->count = count($dummy_groups);
-    $dummyResponse->data->ids = array_keys($dummy_groups);
-    $dummyResponse->data->targets = $dummy_groups;
     return $response;
   }
 
@@ -489,11 +369,6 @@ class SpringboardAdvocacyAPIClient
    */
   public function getTargetGroup($id) {
     $response = $this->doRequest('GET', 'target-groups/group/' . $id);
-    // dummy response
-    $dummyResponse = new stdClass();
-    $dummyResponse->status_code = 200;
-    $dummy_groups = $this->buildDummyContent();
-    $dummyResponse->data = $dummy_groups[$id];
     return $response;
   }
 
@@ -596,23 +471,6 @@ class SpringboardAdvocacyAPIClient
     return $response;
   }
 
-  /**
-   * Public method to determine whether a custom group is used in a message
-   *
-   * @param string $targetGroup A target ID.
-   *
-   * @return boolean true of the group is used in at least one message or group, false if not.
-   */
-   public function targetGroupInUse($targetGroup) {
-     //@TODO functionality on transaction server needed.
-     // Dummy response for now
-     if($targetGroup == 3) {
-       return TRUE;
-     }
-     else {
-       return FALSE;
-     }
-   }
   /**
    * Public method to delete a target group.
    *
