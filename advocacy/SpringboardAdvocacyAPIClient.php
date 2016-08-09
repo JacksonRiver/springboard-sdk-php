@@ -237,6 +237,7 @@ class SpringboardAdvocacyAPIClient
    *
    * limit
    * offset
+   * is_template
    *
    * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing an array containing an array of Target objects keyed by 'targets'
@@ -438,7 +439,6 @@ class SpringboardAdvocacyAPIClient
    *
    *  array(
    *    'name' => 'group name', //required
-   *    'is_template' => 0, //required boolean @TODO
    *    'chambers' => array(
    *         0 => array('chamber' => 'fs', 'party =>'r', state => 'MA'),
    *         1 => array('chamber' => 'fs', 'party =>'d', state => 'MA')
