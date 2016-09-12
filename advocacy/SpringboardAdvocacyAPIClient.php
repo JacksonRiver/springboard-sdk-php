@@ -231,13 +231,14 @@ class SpringboardAdvocacyAPIClient
    * @param  array  $params
    * An array containing a search parameters, which must include:
    *
-   * group-name
+   * group_name
    *
    * and may include:
    *
    * limit
    * offset
    * is_template
+   * with_members
    *
    * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing an array containing an array of Target objects keyed by 'targets'
@@ -246,6 +247,15 @@ class SpringboardAdvocacyAPIClient
   public function searchTargetGroups($params = NULL) {
     // Only allow for searching of editable custom groups.
     $params['is_template'] = 1;
+
+    // Default to allow searching by group name or member names.
+    if(!isset($params['with_members'])) {
+      $params['with_members'] = 1;
+    }
+
+    if(!isset($params['group_name'])) {
+      $params['group_name'] = '';
+    }
 
     $response = $this->doRequest('GET', 'target-groups/search', $params);
     return $response;
