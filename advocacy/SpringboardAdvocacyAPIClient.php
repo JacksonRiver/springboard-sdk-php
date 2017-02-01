@@ -912,6 +912,7 @@ class SpringboardAdvocacyAPIClient
     $json = curl_exec($handle);
     curl_close($handle);
     $response = json_decode($json);
+
     if (!empty($response)) {
       return $response;
     }
