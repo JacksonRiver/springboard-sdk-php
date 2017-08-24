@@ -200,7 +200,7 @@ class SpringboardAdvocacyAPIClient
    * @param  array  $params
    * An array containing search parameters, which may include:
    *
-   * class_name
+   * class_name // "legislator" or "target" (for custom targets)
    * last_name
    * gender
    * party
@@ -226,23 +226,37 @@ class SpringboardAdvocacyAPIClient
 
   /**
    * Public method to return all Target Groups associated with a given search query.
-   *
+   * @NOTE not used yet
    *
    * @param  array  $params
    * An array containing a search parameters, which must include:
    *
-   * group-name
+   * group_name
    *
    * and may include:
    *
    * limit
    * offset
+   * is_template
+   * with_members
    *
    * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing an array containing an array of Target objects keyed by 'targets'
    * and a result count keyed by 'count'.
    */
   public function searchTargetGroups($params = NULL) {
+    // Only allow for searching of editable custom groups.
+    $params['is_template'] = 1;
+
+    // Default to allow searching by group name or member names.
+    if(!isset($params['with_members'])) {
+      $params['with_members'] = 1;
+    }
+
+    if(!isset($params['group_name'])) {
+      $params['group_name'] = '';
+    }
+
     $response = $this->doRequest('GET', 'target-groups/search', $params);
     return $response;
   }
@@ -342,7 +356,27 @@ class SpringboardAdvocacyAPIClient
    * @param string $id The Target ID.
    *
    * @return obj A response object with an 'error' property containing a message
-   * or a 'data' property containing a Target Group object
+   * or a 'data' property containing a Target Group object with the properties:
+   *  - string id
+   *      transaction server ID of the group
+   *  - string name
+   *      human-readable name
+   *  - string account_id
+   *  - string is_template
+   *      Flag to signify if the group is editable
+   *  - string created_at
+   *  - string updated_at
+   *  - array parents
+   *      an array of group IDs for any groups that contain this group as targets.
+   *  - array chambers
+   *  - array executives
+   *  - array targets
+   *      an array of individual target IDs
+   *  - array groups
+   *      an array of child group IDs
+   *  - obj messages
+   *      data about the parent message, if applicable
+   *
    */
   public function getTargetGroup($id) {
     $response = $this->doRequest('GET', 'target-groups/group/' . $id);
@@ -376,6 +410,7 @@ class SpringboardAdvocacyAPIClient
    *
    *  array(
    *    'name' => 'group name', //required
+   *    'is_template' => 0, // required
    *    'chambers' => array(
    *         0 => array('chamber' => 'fs', 'party =>'r', state => 'MA'),
    *         1 => array('chamber' => 'fs', 'party =>'d', state => 'MA')
@@ -386,6 +421,7 @@ class SpringboardAdvocacyAPIClient
    *       )
    *     )
    *     'target_ids' => array('1', '2', '3', '4', '5', '6', '7'),
+   *     'groups' => array()
    *   )
    *
    * @return object A response object with an 'error' property containing a message
@@ -394,6 +430,10 @@ class SpringboardAdvocacyAPIClient
    * 'id' => [target group id];
    */
   public function createTargetGroup(array $targetGroup) {
+    // Set default for is_template
+    if(!isset($targetGroup['is_template'])) {
+      $targetGroup['is_template'] = 0;
+    }
     $this->postFields = $targetGroup;
     $response = $this->doRequest('POST', 'target-groups');
     return $response;
@@ -427,7 +467,7 @@ class SpringboardAdvocacyAPIClient
    *      ),
    *   )
    *
-   *  @param string $targetGroup A target ID.
+   *  @param string $id A target ID.
    *
    * @return object A response object with an 'error' property containing a message
    * or a 'data' property containing an array with keys/values:
