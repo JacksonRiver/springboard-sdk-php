@@ -168,6 +168,19 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return all legislators that represent a given zip code.
+   *
+   * @param string $zip A full 9-digit US zip code in the format 99999-9999.
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of Legislators objects.
+   */
+  public function getLocalOfficals($zip) {
+    $response = $this->doRequest( 'GET','targets/officials', array('zip' => $zip));
+    return $response;
+  }
+
+  /**
    * Public method to return all districts associated with a given zip code.
    *
    * @param string $zip A full 9-digit US zip code in the format 99999-9999.
