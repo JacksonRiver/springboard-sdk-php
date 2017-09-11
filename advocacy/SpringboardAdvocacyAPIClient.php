@@ -829,6 +829,7 @@ class SpringboardAdvocacyAPIClient
     static $http_methods = array(
       'GET' => array(
         'targets/legislators',
+        'targets/officials',
         'districts',
         'districts/state',
         'targets',
