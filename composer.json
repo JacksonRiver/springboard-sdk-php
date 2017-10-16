@@ -1,5 +1,5 @@
 {
-    "name": "jacksonriver/springboard_sdk_php",
+    "name": "jacksonriver/springboard-sdk-php",
     "description": "PHP SDK for Springboard related services",
     "type": "library",
     "license": "MIT",
