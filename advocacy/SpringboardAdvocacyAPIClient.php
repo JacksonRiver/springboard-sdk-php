@@ -223,6 +223,20 @@ class SpringboardAdvocacyAPIClient
 
 
   /**
+   * Public method to return all Counties associated with a given zip code.
+   *
+   * @param string $abbr A state abbreviation.
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of district names q.
+   */
+  public function getPlacesByState($abbr) {
+    $response = $this->doRequest('GET', 'places/state', array('state' => $abbr));
+    return $response;
+  }
+
+
+  /**
    * Public method to return all Targets associated with a given search query.
    *
    *
@@ -848,6 +862,7 @@ class SpringboardAdvocacyAPIClient
         'districts',
         'districts/state',
         'counties/state',
+        'places/state',
         'targets',
         'targets/custom',
         'targets/search',
