@@ -501,16 +501,16 @@ class SpringboardAdvocacyAPIClient
    * Public method to return target deliverability metrics given a form identifier.
    *
    * @param string $messageActionId The Message Action ID.
+   * @param string $start_date The Message Action ID.
+   * @param string $end_date The Message Action ID.
    *
    * @return obj A response object with an 'error' property containing a message
    * or a 'data' property containing a list of deliverability metrics
    */
-  public function getTargetDeliverability($formId) {
-
-    $response = $this->doRequest('GET', 'deliverability/action/' .$formId);
+  public function getTargetDeliverability($formId, $start_date, $end_date, $cached) {
+    $response = $this->doRequest('GET', 'deliverability/action/' .$formId, array('cached' => $cached, 'start_date' => $start_date, 'end_date' => $end_date));
     return $response;
   }
-
   /**
    * Public method to return target deliverability metrics for a single target given a form identifier.
    *
