@@ -230,8 +230,8 @@ class SpringboardAdvocacyAPIClient
    * @return object A response object with an 'error' property containing a message
    * or a 'data' property containing an array of district names q.
    */
-  public function getPlacesByState($abbr) {
-    $response = $this->doRequest('GET', 'places/state', array('state' => $abbr));
+  public function getPlacesByState($state, $county) {
+    $response = $this->doRequest('GET', 'places/state', array('state' => $state, 'county' => $county));
     return $response;
   }
 
