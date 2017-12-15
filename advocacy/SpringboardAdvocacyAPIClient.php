@@ -508,7 +508,7 @@ class SpringboardAdvocacyAPIClient
    * or a 'data' property containing a list of deliverability metrics
    */
   public function getTargetDeliverability($formId, $start_date, $end_date, $test_mode, $cached) {
-    $response = $this->doRequest('GET', 'deliverability/action/' .$formId, array('cached' => $cached, 'start_date' => $start_date, 'end_date' => $end_date, 'test_mode' => $test_mode));
+    $response = $this->doRequest('GET', 'deliverability/action/' .$formId, array('cached' => $cached, 'start_date' => $start_date, 'end_date' => $end_date, 'show_test_mode' => $test_mode));
     return $response;
   }
   /**
