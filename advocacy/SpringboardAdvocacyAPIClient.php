@@ -168,6 +168,20 @@ class SpringboardAdvocacyAPIClient
   }
 
   /**
+   * Public method to return all local officials that associated with
+   * a given zip code.
+   *
+   * @param string $zip A full 9-digit US zip code in the format 99999-9999.
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of Legislators objects.
+   */
+  public function getLocalOfficials($zip) {
+    $response = $this->doRequest( 'GET','targets/officials', array('zip' => $zip));
+    return $response;
+  }
+
+  /**
    * Public method to return all districts associated with a given zip code.
    *
    * @param string $zip A full 9-digit US zip code in the format 99999-9999.
@@ -192,6 +206,35 @@ class SpringboardAdvocacyAPIClient
     $response = $this->doRequest('GET', 'districts/state', array('state' => $abbr));
     return $response;
   }
+
+
+  /**
+   * Public method to return all Counties associated with a given zip code.
+   *
+   * @param string $abbr A state abbreviation.
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of district names q.
+   */
+  public function getCountiesByState($abbr) {
+    $response = $this->doRequest('GET', 'counties/state', array('state' => $abbr));
+    return $response;
+  }
+
+
+  /**
+   * Public method to return all Counties associated with a given zip code.
+   *
+   * @param string $abbr A state abbreviation.
+   *
+   * @return object A response object with an 'error' property containing a message
+   * or a 'data' property containing an array of district names q.
+   */
+  public function getPlacesByState($state, $county) {
+    $response = $this->doRequest('GET', 'places/state', array('state' => $state, 'county' => $county));
+    return $response;
+  }
+
 
   /**
    * Public method to return all Targets associated with a given search query.
@@ -815,8 +858,11 @@ class SpringboardAdvocacyAPIClient
     static $http_methods = array(
       'GET' => array(
         'targets/legislators',
+        'targets/officials',
         'districts',
         'districts/state',
+        'counties/state',
+        'places/state',
         'targets',
         'targets/custom',
         'targets/search',
