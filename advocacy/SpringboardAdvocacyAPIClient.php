@@ -202,8 +202,8 @@ class SpringboardAdvocacyAPIClient
    * @return object A response object with an 'error' property containing a message
    * or a 'data' property containing an array of district names q.
    */
-  public function getDistrictsByState($abbr) {
-    $response = $this->doRequest('GET', 'districts/state', array('state' => $abbr));
+  public function getDistrictsByState($abbr, $subscriptionType) {
+    $response = $this->doRequest('GET', 'districts/state', array('state' => $abbr, 'subscription_type' => $subscriptionType ));
     return $response;
   }
 
