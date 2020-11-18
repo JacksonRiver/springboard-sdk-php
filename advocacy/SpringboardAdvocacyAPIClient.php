@@ -199,11 +199,14 @@ class SpringboardAdvocacyAPIClient
    *
    * @param string $abbr A state abbreviation.
    *
+   * @param string $subscriptionType A subscription type. Optional for
+   * springboard groups.
+   *
    * @return object A response object with an 'error' property containing a message
    * or a 'data' property containing an array of district names q.
    */
-  public function getDistrictsByState($abbr) {
-    $response = $this->doRequest('GET', 'districts/state', array('state' => $abbr));
+  public function getDistrictsByState($abbr, $subscriptionType = NULL) {
+    $response = $this->doRequest('GET', 'districts/state', array('state' => $abbr, 'subscription_type' => $subscriptionType ));
     return $response;
   }
 
